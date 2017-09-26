@@ -1,3 +1,11 @@
+data "template_file" "tags" {
+  template = "{ Name = bucket-$${bucket_name} }"
+
+  vars {
+    bucket_name = "${var.bucket_name}"
+  }
+}
+
 resource "aws_s3_bucket" "encrypted_bucket" {
   bucket = "${var.bucket_name}"
 
@@ -5,9 +13,7 @@ resource "aws_s3_bucket" "encrypted_bucket" {
     enabled = true
   }
 
-  tags {
-    Name = "bucket-${var.bucket_name}"
-  }
+  tags = "${merge(map("Name", "${var.bucket_name}"), var.tags)}"
 }
 
 data "aws_iam_policy_document" "encrypted_bucket_policy" {

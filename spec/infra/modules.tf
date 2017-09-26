@@ -3,4 +3,8 @@ module "encrypted_bucket" {
 
   region = "${var.region}"
   bucket_name = "${var.bucket_name}"
+
+  tags = {
+    Thing = "value"
+  }
 }

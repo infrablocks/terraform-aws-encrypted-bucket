@@ -9,7 +9,8 @@ describe 'Encrypted bucket' do
 
   it {should exist}
   it {should have_versioning_enabled}
-  it {should have_tag('Name').value("bucket-#{bucket_name}")}
+  it {should have_tag('Name').value("#{bucket_name}")}
+  it {should have_tag('Thing').value("value")}
 
   it 'is private' do
     expect(subject.acl_grants_count).to(eq(1))
