@@ -51,6 +51,8 @@ Executing `terraform get` will fetch the module.
 * s3:PutBucketTagging
 * s3:PutBucketVersioning
 * s3:PutBucketPolicy
+* s3:DeleteBucketPolicy
+* s3:DeleteBucket
 
 Development
 -----------
