@@ -51,7 +51,7 @@ describe 'Encrypted bucket' do
     expect(statement['Resource']).to(eq("arn:aws:s3:::#{bucket_name}/*"))
     expect(statement['Condition'])
         .to(eq(JSON.parse(
-            '{"Bool": {"aws:SecureTransport": "0"}}')))
+            '{"Bool": {"aws:SecureTransport": "false"}}')))
   end
 
   it 'outputs the bucket name' do

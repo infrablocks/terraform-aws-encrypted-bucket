@@ -1,8 +1,25 @@
-data "template_file" "tags" {
-  template = "{ Name = bucket-$${bucket_name} }"
+data "template_file" "deny_unencrypted_object_uploads_fragment" {
+  template = "${file("${path.module}/policy-fragments/deny-unencrypted-object-uploads.json.tpl")}"
 
   vars {
     bucket_name = "${var.bucket_name}"
+  }
+}
+
+data "template_file" "deny_unencrypted_inflight_operations_fragment" {
+  template = "${file("${path.module}/policy-fragments/deny-unencrypted-inflight-operations.json.tpl")}"
+
+  vars {
+    bucket_name = "${var.bucket_name}"
+  }
+}
+
+data "template_file" "encrypted_bucket_policy" {
+  template = "${coalesce(var.bucket_policy_template, file("${path.module}/policies/bucket-policy.json.tpl"))}"
+
+  vars {
+    deny_unencrypted_object_upload_fragment = "${data.template_file.deny_unencrypted_object_uploads_fragment.rendered}"
+    deny_unencrypted_inflight_operations_fragment = "${data.template_file.deny_unencrypted_inflight_operations_fragment.rendered}"
   }
 }
 
@@ -16,49 +33,9 @@ resource "aws_s3_bucket" "encrypted_bucket" {
   tags = "${merge(map("Name", "${var.bucket_name}"), var.tags)}"
 }
 
-data "aws_iam_policy_document" "encrypted_bucket_policy" {
-  statement {
-    sid = "DenyUnEncryptedObjectUploads"
 
-    effect = "Deny"
-    actions = ["s3:PutObject"]
-
-    resources = ["arn:aws:s3:::${var.bucket_name}/*"]
-
-    condition {
-      test = "StringNotEquals"
-      values = ["AES256"]
-      variable = "s3:x-amz-server-side-encryption"
-    }
-
-    principals {
-      identifiers = ["*"]
-      type = "AWS"
-    }
-  }
-
-  statement {
-    sid = "DenyUnEncryptedInflightOperations"
-
-    effect = "Deny"
-    actions = ["s3:*"]
-
-    resources = ["arn:aws:s3:::${var.bucket_name}/*"]
-
-    condition {
-      test = "Bool"
-      values = [false]
-      variable = "aws:SecureTransport"
-    }
-
-    principals {
-      identifiers = ["*"]
-      type = "AWS"
-    }
-  }
-}
 
 resource "aws_s3_bucket_policy" "encrypted_bucket" {
   bucket = "${aws_s3_bucket.encrypted_bucket.id}"
-  policy = "${data.aws_iam_policy_document.encrypted_bucket_policy.json}"
+  policy = "${data.template_file.encrypted_bucket_policy.rendered}"
 }
