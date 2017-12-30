@@ -34,8 +34,6 @@ resource "aws_s3_bucket" "encrypted_bucket" {
   tags = "${merge(map("Name", "${var.bucket_name}"), var.tags)}"
 }
 
-
-
 resource "aws_s3_bucket_policy" "encrypted_bucket" {
   bucket = "${aws_s3_bucket.encrypted_bucket.id}"
   policy = "${data.template_file.encrypted_bucket_policy.rendered}"

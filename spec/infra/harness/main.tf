@@ -1,7 +1,6 @@
 module "encrypted_bucket" {
-  source = "../../../src"
+  source = "../../../../"
 
-  region = "${var.region}"
   bucket_name = "${var.bucket_name}"
 
   tags = {

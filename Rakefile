@@ -9,7 +9,7 @@ configuration = Configuration.new
 
 RakeTerraform.define_installation_tasks(
     path: File.join(Dir.pwd, 'vendor', 'terraform'),
-    version: '0.9.8')
+    version: '0.11.1')
 
 task :default => 'test:integration'
 
@@ -19,15 +19,23 @@ namespace :test do
   end
 end
 
-RakeTerraform.define_command_tasks do |t|
-  t.configuration_name = 'encrypted bucket module'
-  t.source_directory = configuration.source_directory
-  t.work_directory = configuration.work_directory
+namespace :deployment do
+  namespace :harness do
+    RakeTerraform.define_command_tasks do |t|
+      t.argument_names = [:deployment_identifier]
 
-  t.state_file = configuration.state_file
+      t.configuration_name = 'encrypted bucket module'
+      t.source_directory = configuration.for(:harness).source_directory
+      t.work_directory = configuration.for(:harness).work_directory
 
-  t.vars = lambda do
-    configuration.vars.to_h
+      t.state_file = configuration.for(:harness).state_file
+
+      t.vars = lambda do |args|
+        configuration.for(:harness, args)
+            .vars
+            .to_h
+      end
+    end
   end
 end
 

@@ -14,26 +14,36 @@ To use the module, include something like the following in your terraform config
 module "encrypted_bucket" {
   source = "git@github.com:infrablocks/terraform-aws-encrypted-bucket.git//src"
   
-  region = "eu-west-2"
   bucket_name = "my-organisations-encrypted-bucket"
 }
 ```
 
-Executing `terraform get` will fetch the module.
-
 
 ### Inputs
 
-| Name                        | Description                                 | Default | Required |
-|-----------------------------|---------------------------------------------|:-------:|:--------:|
-| region                      | The region into which to deploy the VPC     | -       | yes      |
-| bucket_name                 | The name to use for the encrypted S3 bucket | -       | yes      |
+| Name                   | Description                                      | Default      | Required |
+|------------------------|--------------------------------------------------|:------------:|:--------:|
+| bucket_name            | The name to use for the encrypted S3 bucket      | -            | yes      |
+| bucket_policy_template | A template for the policy to apply to the bucket | see policies | no       |
+| tags                   | A map of additional tags to set on the bucket    | {}           | no       |  
 
+By default, a bucket policy that enforces encrypted inflight operations and 
+object uploads is applied to the bucket. In the case that further statements
+need to be applied, a `bucket_policy_template` can be provided that will
+receive `deny_unencrypted_object_upload_fragment` and 
+`deny_unencrypted_inflight_operations_fragment` statement fragments along with
+the `bucket_name` and the resulting policy will be used instead.
+
+The provided `tags` map, when present will be merged with a compulsory tags map 
+containing a `Name` tag equal to the bucket name.
+  
 
 ### Outputs
 
-| Name                         | Description                                           |
-|------------------------------|-------------------------------------------------------|
+| Name        | Description                    |
+|-------------|--------------------------------|
+| bucket_name | The name of the created bucket |
+
 
 ### Required Permissions
 
@@ -120,24 +130,27 @@ execute:
 To provision the module contents:
 
 ```bash
-./go provision[<deployment_identifier>]
+./go deployment:harness:provision[<deployment_identifier>]
 ```
 
 To destroy the module contents:
 
 ```bash
-./go destroy[<deployment_identifier>]
+./go deployment:harness:destroy[<deployment_identifier>]
 ```
 
 Contributing
 ------------
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/infrablocks/terraform-aws-encrypted-bucket. 
-This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to 
+Bug reports and pull requests are welcome on GitHub at 
+https://github.com/infrablocks/terraform-aws-encrypted-bucket. 
+This project is intended to be a safe, welcoming space for collaboration, and 
+contributors are expected to adhere to 
 the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 
 License
 -------
 
-The library is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
+The library is available as open source under the terms of the 
+[MIT License](http://opensource.org/licenses/MIT).
