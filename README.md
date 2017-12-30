@@ -27,6 +27,7 @@ module "encrypted_bucket" {
 | bucket_policy_template | A template for the policy to apply to the bucket | see policies | no       |
 | tags                   | A map of additional tags to set on the bucket    | {}           | no       |  
 
+
 By default, a bucket policy that enforces encrypted inflight operations and 
 object uploads is applied to the bucket. In the case that further statements
 need to be applied, a `bucket_policy_template` can be provided that will
