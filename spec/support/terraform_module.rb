@@ -73,5 +73,35 @@ module TerraformModule
         puts
       end
     end
+
+    def plan_for(role, vars = nil)
+      plan(OpenStruct.new(
+          configuration.for(role)
+              .to_h.merge(vars: vars || configuration.for(role).vars)))
+    end
+
+    def plan(configuration)
+      unless ENV['DEPLOYMENT_IDENTIFIER']
+        puts
+        puts "Planning with deployment identifier: #{configuration.deployment_identifier}"
+        puts
+
+        FileUtils.rm_rf(File.dirname(configuration.configuration_directory))
+        FileUtils.mkdir_p(File.dirname(configuration.configuration_directory))
+        FileUtils.cp_r(
+            configuration.source_directory,
+            configuration.configuration_directory)
+
+        Dir.chdir(configuration.configuration_directory) do
+          RubyTerraform.init
+          RubyTerraform.plan(
+              state: configuration.state_file,
+              directory: '.',
+              vars: configuration.vars.to_h)
+        end
+
+        puts
+      end
+    end
   end
 end

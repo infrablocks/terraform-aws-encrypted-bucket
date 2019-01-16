@@ -25,7 +25,8 @@ module "encrypted_bucket" {
 |------------------------|--------------------------------------------------|:------------:|:--------:|
 | bucket_name            | The name to use for the encrypted S3 bucket      | -            | yes      |
 | bucket_policy_template | A template for the policy to apply to the bucket | see policies | no       |
-| tags                   | A map of additional tags to set on the bucket    | {}           | no       |  
+| tags                   | A map of additional tags to set on the bucket    | {}           | no       |
+| mfa_delete             | Enable MFA delete for either _Change the versioning state of your bucket_ or _Permanently delete an object version_ | false | no |  
 
 
 By default, a bucket policy that enforces encrypted inflight operations and 

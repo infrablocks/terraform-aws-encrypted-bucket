@@ -17,4 +17,11 @@ shared_context :terraform do
         TerraformModule.configuration.for(:harness)
             .vars.to_h.merge(override_vars))
   end
+
+  def plan(override_vars = {})
+    TerraformModule.plan_for(
+        :harness,
+        TerraformModule.configuration.for(:harness)
+            .vars.to_h.merge(override_vars))
+  end
 end

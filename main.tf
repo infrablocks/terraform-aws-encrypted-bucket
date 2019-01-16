@@ -29,6 +29,7 @@ resource "aws_s3_bucket" "encrypted_bucket" {
 
   versioning {
     enabled = true
+    mfa_delete = "${var.mfa_delete}"
   }
 
   tags = "${merge(map("Name", "${var.bucket_name}"), var.tags)}"
