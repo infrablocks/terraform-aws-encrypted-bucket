@@ -27,6 +27,8 @@ data "template_file" "encrypted_bucket_policy" {
 resource "aws_s3_bucket" "encrypted_bucket" {
   bucket = "${var.bucket_name}"
 
+  acl = "${var.acl}"
+
   versioning {
     enabled = true
   }

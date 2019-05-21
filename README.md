@@ -21,11 +21,12 @@ module "encrypted_bucket" {
 
 ### Inputs
 
-| Name                   | Description                                      | Default      | Required |
-|------------------------|--------------------------------------------------|:------------:|:--------:|
-| bucket_name            | The name to use for the encrypted S3 bucket      | -            | yes      |
-| bucket_policy_template | A template for the policy to apply to the bucket | see policies | no       |
-| tags                   | A map of additional tags to set on the bucket    | {}           | no       |  
+| Name                   | Description                                                                                                 | Default      | Required |
+|------------------------|-------------------------------------------------------------------------------------------------------------|:------------:|:--------:|
+| bucket_name            | The name to use for the encrypted S3 bucket                                                                 | -            | yes      |
+| bucket_policy_template | A template for the policy to apply to the bucket                                                            | see policies | no       |
+| acl                    | The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply.    | private      | no       |
+| tags                   | A map of additional tags to set on the bucket                                                               | {}           | no       |
 
 
 By default, a bucket policy that enforces encrypted inflight operations and 
