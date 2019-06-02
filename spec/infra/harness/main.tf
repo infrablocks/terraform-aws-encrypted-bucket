@@ -4,6 +4,8 @@ module "encrypted_bucket" {
   bucket_name = "${var.bucket_name}"
   acl = "${var.acl}"
 
+  mfa_delete = "${var.mfa_delete}"
+
   tags = {
     Thing = "value"
   }

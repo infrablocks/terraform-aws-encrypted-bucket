@@ -10,6 +10,7 @@ describe 'Encrypted bucket' do
   context 'with default variables' do
     it {should exist}
     it {should have_versioning_enabled}
+    it {should_not have_mfa_delete_enabled}
     it {should have_tag('Name').value("#{bucket_name}")}
     it {should have_tag('Thing').value("value")}
 
@@ -75,5 +76,25 @@ describe 'Encrypted bucket' do
       expect(acl_grant.grantee.type).to(eq('Group'))
       expect(acl_grant.permission).to(eq('READ'))
     end
+  end
+
+  context 'when mfa_delete specified' do
+    let(:plan_output) {
+      capture_stdout do
+        plan(mfa_delete: 'true')
+      end
+    }
+
+    subject {plan_output}
+
+    it { is_expected.to include('versioning.0.mfa_delete: "false" => "true"') }
+  end
+
+  def capture_stdout(&block)
+    output = StringIO.new
+    $stdout = output
+    block.call
+    $stdout = STDOUT
+    output.string
   end
 end
