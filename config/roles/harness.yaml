@@ -6,4 +6,7 @@ vars:
 
   bucket_name: "infrablocks-encrypted-%{hiera('deployment_identifier')}"
 
-  mfa_delete: "false"
+  acl: "%{hiera('acl')}"
+
+  mfa_delete: "%{hiera('mfa_delete')}"
+

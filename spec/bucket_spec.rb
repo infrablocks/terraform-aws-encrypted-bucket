@@ -2,17 +2,17 @@ require 'spec_helper'
 require 'pp'
 
 describe 'Encrypted bucket' do
-  let(:region) {vars.region}
-  let(:bucket_name) {vars.bucket_name}
+  let(:region) { vars.region }
+  let(:bucket_name) { vars.bucket_name }
 
-  subject {s3_bucket(bucket_name)}
+  subject { s3_bucket(bucket_name) }
 
   context 'with default variables' do
-    it {should exist}
-    it {should have_versioning_enabled}
-    it {should_not have_mfa_delete_enabled}
-    it {should have_tag('Name').value("#{bucket_name}")}
-    it {should have_tag('Thing').value("value")}
+    it { should exist }
+    it { should have_versioning_enabled }
+    it { should_not have_mfa_delete_enabled }
+    it { should have_tag('Name').value(bucket_name) }
+    it { should have_tag('Thing').value("value") }
 
     it 'is private' do
       expect(subject.acl_grants_count).to(eq(1))
@@ -85,16 +85,27 @@ describe 'Encrypted bucket' do
       end
     }
 
-    subject {plan_output}
+    subject { plan_output }
 
-    it { is_expected.to include('versioning.0.mfa_delete: "false" => "true"') }
+    it {
+      puts subject
+      is_expected.to include('mfa_delete = false -> true')
+    }
   end
 
   def capture_stdout(&block)
     output = StringIO.new
-    $stdout = output
+
+    RubyTerraform.configure do |c|
+      c.stdout = output
+    end
+
     block.call
-    $stdout = STDOUT
+
+    RubyTerraform.configure do |c|
+      c.stdout = $stdout
+    end
+
     output.string
   end
 end

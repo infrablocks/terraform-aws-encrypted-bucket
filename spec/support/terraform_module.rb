@@ -33,7 +33,8 @@ module TerraformModule
         RubyTerraform.plan(
             state: configuration.state_file,
             directory: '.',
-            vars: configuration.vars.to_h)
+            vars: configuration.vars.to_h,
+            no_color: true)
 
         puts
       end
