@@ -13,7 +13,7 @@ variable "acl" {
 
 variable "tags" {
   description = "A map of additional tags to set on the bucket."
-  type = "map"
+  type = map(string)
   default = {}
 }
 

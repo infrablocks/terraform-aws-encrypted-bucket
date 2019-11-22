@@ -1,0 +1,9 @@
+---
+source_directory: "spec/infra/harness"
+state_file: "%{hiera('project_directory')}/state/harness.tfstate"
+vars:
+  region: "%{hiera('region')}"
+
+  bucket_name: "infrablocks-encrypted-%{hiera('deployment_identifier')}"
+
+  mfa_delete: "false"
