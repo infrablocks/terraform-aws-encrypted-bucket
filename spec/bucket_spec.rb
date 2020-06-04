@@ -59,6 +59,11 @@ describe 'Encrypted bucket' do
     it 'outputs the bucket name' do
       expect(output_for(:harness, 'bucket_name')).to(eq(bucket_name))
     end
+
+    it 'outputs the bucket ARN' do
+      expect(output_for(:harness, 'bucket_arn'))
+          .to(eq("arn:aws:s3:::#{bucket_name}"))
+    end
   end
 
   context 'with public-read acl' do
