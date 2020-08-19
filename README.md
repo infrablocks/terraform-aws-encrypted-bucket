@@ -25,6 +25,7 @@ module "encrypted_bucket" {
 |------------------------|---------------------------------------------------------------------------------------------------------------------|:------------:|:--------:|
 | bucket_name            | The name to use for the encrypted S3 bucket                                                                         | -            | yes      |
 | bucket_policy_template | A template for the policy to apply to the bucket                                                                    | see policies | no       |
+| source_policy_json     | A source policy for the bucket, additional statements to enable encryption will be added to the policy              | ""           | no       |
 | acl                    | The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply.            | private      | no       |
 | mfa_delete             | Enable MFA delete for either _Change the versioning state of your bucket_ or _Permanently delete an object version_ | false        | no       |
 | tags                   | A map of additional tags to set on the bucket                                                                       | {}           | no       |
@@ -32,10 +33,14 @@ module "encrypted_bucket" {
 
 By default, a bucket policy that enforces encrypted inflight operations and 
 object uploads is applied to the bucket. In the case that further statements
-need to be applied, a `bucket_policy_template` can be provided that will
-receive `deny_unencrypted_object_upload_fragment` and 
-`deny_unencrypted_inflight_operations_fragment` statement fragments along with
-the `bucket_name` and the resulting policy will be used instead.
+need to be applied, there are two methods that can be used:
+- A `bucket_policy_template` can be provided that will receive
+  `deny_unencrypted_object_upload_fragment` and
+  `deny_unencrypted_inflight_operations_fragment`
+  statement fragments along with the `bucket_name` and the resulting policy
+  will be used instead.
+- A `source_policy_json` can be provided and the additional statements will
+  be added to this policy before being attached to the bucket
 
 The provided `tags` map, when present will be merged with a compulsory tags map 
 containing a `Name` tag equal to the bucket name.

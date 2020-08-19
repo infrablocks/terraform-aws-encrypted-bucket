@@ -8,4 +8,6 @@ configuration_directory: "%{hiera('work_directory')}/%{hiera('source_directory')
 
 acl: "private"
 
+include_source_policy_json: "false"
+
 mfa_delete: "false"
