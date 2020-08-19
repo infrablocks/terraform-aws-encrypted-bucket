@@ -8,5 +8,7 @@ vars:
 
   acl: "%{hiera('acl')}"
 
+  include_source_policy_json: "%{hiera('include_source_policy_json')}"
+
   mfa_delete: "%{hiera('mfa_delete')}"
 

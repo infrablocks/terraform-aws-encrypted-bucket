@@ -66,6 +66,63 @@ describe 'Encrypted bucket' do
     end
   end
 
+  context 'with source policy json' do
+    before(:all) do
+      reprovision(include_source_policy_json: "true")
+    end
+
+    it 'denies unencrypted object uploads' do
+      policy = JSON.parse(
+          find_bucket_policy(subject.id).policy.read)
+      statements = policy['Statement']
+      statement = statements.find do |s|
+        s['Sid'] == 'DenyUnEncryptedObjectUploads'
+      end
+
+      expect(statement['Effect']).to(eq('Deny'))
+      expect(statement['Principal']).to(eq('*'))
+      expect(statement['Action']).to(eq('s3:PutObject'))
+      expect(statement['Resource']).to(eq("arn:aws:s3:::#{bucket_name}/*"))
+      expect(statement['Condition'])
+          .to(eq(JSON.parse(
+              '{"StringNotEquals": {"s3:x-amz-server-side-encryption": "AES256"}}')))
+    end
+
+    it 'denies unencrypted in flight operations' do
+      policy = JSON.parse(
+          find_bucket_policy(subject.id).policy.read)
+      statements = policy['Statement']
+      statement = statements.find do |s|
+        s['Sid'] == 'DenyUnEncryptedInflightOperations'
+      end
+
+      expect(statement['Effect']).to(eq('Deny'))
+      expect(statement['Principal']).to(eq('*'))
+      expect(statement['Action']).to(eq('s3:*'))
+      expect(statement['Resource']).to(eq("arn:aws:s3:::#{bucket_name}/*"))
+      expect(statement['Condition'])
+          .to(eq(JSON.parse(
+              '{"Bool": {"aws:SecureTransport": "false"}}')))
+    end
+
+    it 'has TestPolicy' do
+      policy = JSON.parse(
+          find_bucket_policy(subject.id).policy.read)
+      statements = policy['Statement']
+      statement = statements.find do |s|
+        s['Sid'] == 'TestPolicy'
+      end
+
+      expect(statement['Effect']).to(eq('Deny'))
+      expect(statement['Principal']).to(eq('*'))
+      expect(statement['Action']).to(eq('s3:*'))
+      expect(statement['Resource']).to(eq("arn:aws:s3:::#{bucket_name}/*"))
+      expect(statement['Condition'])
+          .to(eq(JSON.parse(
+              '{"IpAddress": {"aws:SourceIp": "8.8.8.8/32"}}')))
+    end
+  end
+
   context 'with public-read acl' do
     before(:all) do
       reprovision(acl: 'public-read')

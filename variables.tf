@@ -6,6 +6,11 @@ variable "bucket_policy_template" {
   description = "A template for the policy to apply to the bucket."
   default = ""
 }
+variable "source_policy_json" {
+  description = "A source policy for the bucket, additional statements to enable encryption will be added to the policy"
+  default = ""
+}
+
 variable "acl" {
   description = "The canned ACL to apply. Defaults to private."
   default = "private"

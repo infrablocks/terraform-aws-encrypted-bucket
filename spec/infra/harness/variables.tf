@@ -3,3 +3,5 @@ variable "bucket_name" {}
 variable "mfa_delete" {}
 
 variable "acl" {}
+
+variable "include_source_policy_json" {}
