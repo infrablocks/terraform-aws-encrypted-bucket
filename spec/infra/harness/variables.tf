@@ -5,3 +5,5 @@ variable "mfa_delete" {}
 variable "acl" {}
 
 variable "include_source_policy_json" {}
+
+variable "allow_destroy_when_objects_present" {}

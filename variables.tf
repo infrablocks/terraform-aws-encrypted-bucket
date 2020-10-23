@@ -26,3 +26,9 @@ variable "mfa_delete" {
   description = "Enable MFA delete for either Change the versioning state of your bucket or Permanently delete an object version. Default is false."
   default = "false"
 }
+
+variable "allow_destroy_when_objects_present" {
+  description = "Whether or not to allow the bucket to be destroyed if it still contains objects (\"yes\" or \"no\")."
+  type = string
+  default = "no"
+}

@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'aws-sdk'
 require 'pp'
 
 describe 'Encrypted bucket' do
@@ -153,6 +154,61 @@ describe 'Encrypted bucket' do
       puts subject
       is_expected.to include('mfa_delete = false -> true')
     }
+  end
+
+  context 'when allow_destroy_when_objects_present is "yes"' do
+    before(:all) do
+      reprovision(allow_destroy_when_objects_present: 'yes')
+    end
+
+    it 'destroys the bucket even if it contains an object' do
+      s3_client.put_object({
+          body: "hello",
+          bucket: bucket_name,
+          key: "some-object",
+          server_side_encryption: "AES256",
+      })
+
+      begin
+        destroy
+      rescue RubyTerraform::Errors::ExecutionError => e
+        # no-op
+      end
+
+      bucket_list = s3_client.list_buckets
+      bucket_names = bucket_list.buckets.map { |b| b[:name] }
+
+      expect(bucket_names).not_to(include(bucket_name))
+    end
+  end
+
+  context 'when allow_destroy_when_objects_present is "no"' do
+    before(:all) do
+      reprovision(allow_destroy_when_objects_present: 'no')
+    end
+
+    it 'does not destroy the bucket if it contains an object' do
+      s3_client.put_object({
+          body: "hello",
+          bucket: bucket_name,
+          key: "some-object",
+          server_side_encryption: "AES256",
+      })
+
+      begin
+        destroy
+      rescue RubyTerraform::Errors::ExecutionError => e
+        # no-op
+      end
+
+      bucket_list = s3_client.list_buckets
+      bucket_names = bucket_list.buckets.map { |b| b[:name] }
+
+      expect(bucket_names).to(include(bucket_name))
+
+      bucket = Aws::S3::Bucket.new(bucket_name)
+      bucket.delete!
+    end
   end
 
   def capture_stdout(&block)

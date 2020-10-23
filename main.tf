@@ -29,6 +29,8 @@ resource "aws_s3_bucket" "encrypted_bucket" {
 
   acl = var.acl
 
+  force_destroy = var.allow_destroy_when_objects_present == "yes"
+
   versioning {
     enabled = true
     mfa_delete = var.mfa_delete

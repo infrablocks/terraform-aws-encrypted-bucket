@@ -16,6 +16,8 @@ module "encrypted_bucket" {
 
   source_policy_json = var.include_source_policy_json ? data.template_file.test_policy.rendered : ""
 
+  allow_destroy_when_objects_present = var.allow_destroy_when_objects_present
+
   tags = {
     Thing = "value"
   }

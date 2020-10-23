@@ -12,3 +12,4 @@ vars:
 
   mfa_delete: "%{hiera('mfa_delete')}"
 
+  allow_destroy_when_objects_present: "%{hiera('allow_destroy_when_objects_present')}"

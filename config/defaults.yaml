@@ -11,3 +11,5 @@ acl: "private"
 include_source_policy_json: "false"
 
 mfa_delete: "false"
+
+allow_destroy_when_objects_present: "no"
