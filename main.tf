@@ -36,7 +36,9 @@ resource "aws_s3_bucket" "encrypted_bucket" {
     mfa_delete = var.mfa_delete
   }
 
-  tags = merge(map("Name", var.bucket_name), var.tags)
+  tags = merge({
+    Name = var.bucket_name
+  }, var.tags)
 }
 
 data "aws_iam_policy_document" "encrypted_bucket_policy_document" {
