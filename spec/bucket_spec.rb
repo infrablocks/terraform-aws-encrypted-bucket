@@ -58,7 +58,8 @@ describe 'Encrypted bucket' do
     end
 
     it 'outputs the bucket name' do
-      expect(output_for(:harness, 'bucket_name')).to(eq(bucket_name))
+      expect(output_for(:harness, 'bucket_name'))
+        .to(eq(bucket_name))
     end
 
     it 'outputs the bucket ARN' do

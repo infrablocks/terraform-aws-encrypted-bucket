@@ -13,10 +13,9 @@ module TerraformModule
       params = {
           name: name,
           state: configuration.for(role).state_file,
-          json: opts[:parse]
       }
       value = RubyTerraform.output(params)
-      opts[:parse] ? JSON.parse(value, symbolize_names: true) : value
+      JSON.parse(value, symbolize_names: true)
     end
 
     def plan_for(role, overrides = nil)
@@ -31,11 +30,11 @@ module TerraformModule
         puts
 
         RubyTerraform.plan(
+            chdir: configuration.configuration_directory,
             state: configuration.state_file,
-            directory: '.',
             vars: configuration.vars.to_h,
-            no_color: true)
-
+            no_color: true,
+            input: false)
         puts
       end
     end
@@ -52,9 +51,10 @@ module TerraformModule
         puts
 
         RubyTerraform.apply(
+            chdir: configuration.configuration_directory,
             state: configuration.state_file,
-            directory: '.',
             vars: configuration.vars.to_h,
+            input: false,
             auto_approve: true)
 
         puts
@@ -74,10 +74,11 @@ module TerraformModule
           puts
 
           RubyTerraform.destroy(
+              chdir: configuration.configuration_directory,
               state: configuration.state_file,
-              directory: '.',
               vars: configuration.vars.to_h,
-              force: true)
+              input: false,
+              auto_approve: true)
 
           puts
         end
@@ -87,16 +88,14 @@ module TerraformModule
     private
 
     def with_clean_directory(configuration)
-      FileUtils.rm_rf(File.dirname(configuration.configuration_directory))
-      FileUtils.mkdir_p(File.dirname(configuration.configuration_directory))
-      FileUtils.cp_r(
-          configuration.source_directory,
-          configuration.configuration_directory)
+      FileUtils.rm_rf(configuration.configuration_directory)
+      FileUtils.mkdir_p(configuration.configuration_directory)
 
-      Dir.chdir(configuration.configuration_directory) do
-        RubyTerraform.init
-        yield configuration
-      end
+      RubyTerraform.init(
+        chdir: configuration.configuration_directory,
+        from_module: File.join(FileUtils.pwd, configuration.source_directory),
+        input: false)
+      yield configuration
     end
   end
 end

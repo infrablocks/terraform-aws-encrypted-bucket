@@ -1169,7 +1169,7 @@ GEM
       colored2 (~> 3.1)
       rake_factory (~> 0.23)
       sshkey (~> 2.0)
-    rake_terraform (1.16.0.pre.4)
+    rake_terraform (1.16.0)
       colored2 (~> 3.1)
       rake_dependencies (~> 2.9)
       rake_factory (~> 0.23)
@@ -1236,7 +1236,7 @@ DEPENDENCIES
   rake_github (~> 0.7)
   rake_gpg (~> 0.14)
   rake_ssh (~> 0.6)
-  rake_terraform (= 1.16.0.pre.4)
+  rake_terraform (~> 1.16)
   rspec (~> 3.9)
   semantic (~> 1.6)
 

@@ -7,7 +7,8 @@ data "template_file" "test_policy" {
 }
 
 module "encrypted_bucket" {
-  source = "../../../../"
+  # This makes absolutely no sense. I think there's a bug in terraform.
+  source = "./../../../../../../../"
 
   bucket_name = var.bucket_name
   acl = var.acl
