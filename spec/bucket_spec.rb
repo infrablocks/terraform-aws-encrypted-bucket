@@ -70,7 +70,7 @@ describe 'Encrypted bucket' do
 
   context 'with source policy json' do
     before(:all) do
-      reprovision(include_source_policy_json: "true")
+      provision(include_source_policy_json: "true")
     end
 
     it 'denies unencrypted object uploads' do
@@ -127,7 +127,7 @@ describe 'Encrypted bucket' do
 
   context 'with public-read acl' do
     before(:all) do
-      reprovision(acl: 'public-read')
+      provision(acl: 'public-read')
     end
 
     it 'is public-read' do
@@ -159,7 +159,7 @@ describe 'Encrypted bucket' do
 
   context 'when allow_destroy_when_objects_present is "yes"' do
     before(:all) do
-      reprovision(allow_destroy_when_objects_present: 'yes')
+      provision(allow_destroy_when_objects_present: 'yes')
     end
 
     it 'destroys the bucket even if it contains an object' do
@@ -185,7 +185,7 @@ describe 'Encrypted bucket' do
 
   context 'when allow_destroy_when_objects_present is "no"' do
     before(:all) do
-      reprovision(allow_destroy_when_objects_present: 'no')
+      provision(allow_destroy_when_objects_present: 'no')
     end
 
     it 'does not destroy the bucket if it contains an object' do

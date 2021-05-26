@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 require 'ruby_terraform'
 require 'ostruct'
+require 'json'
 
 require_relative '../../lib/configuration'
 
@@ -9,10 +12,11 @@ module TerraformModule
       @configuration ||= Configuration.new
     end
 
-    def output_for(role, name, opts = {})
+    def output_for(role, name)
       params = {
-          name: name,
-          state: configuration.for(role).state_file,
+        name: name,
+        state: configuration.for(role).state_file,
+        json: true
       }
       value = RubyTerraform.output(params)
       JSON.parse(value, symbolize_names: true)
@@ -25,8 +29,7 @@ module TerraformModule
     def plan(configuration)
       with_clean_directory(configuration) do
         puts
-        puts "Planning with deployment identifier: " +
-            configuration.deployment_identifier
+        puts "Planning with deployment identifier: #{configuration.deployment_identifier}"
         puts
 
         RubyTerraform.plan(
@@ -46,16 +49,16 @@ module TerraformModule
     def provision(configuration)
       with_clean_directory(configuration) do
         puts
-        puts "Provisioning with deployment identifier: " +
-            configuration.deployment_identifier.to_s
+        puts "Provisioning with deployment identifier: #{configuration.deployment_identifier}"
         puts
 
         RubyTerraform.apply(
-            chdir: configuration.configuration_directory,
-            state: configuration.state_file,
-            vars: configuration.vars.to_h,
-            input: false,
-            auto_approve: true)
+          chdir: configuration.configuration_directory,
+          state: configuration.state_file,
+          vars: configuration.vars.to_h,
+          input: false,
+          auto_approve: true
+        )
 
         puts
       end
@@ -69,16 +72,16 @@ module TerraformModule
       if opts[:force] || !ENV['DEPLOYMENT_IDENTIFIER']
         with_clean_directory(configuration) do
           puts
-          puts "Destroying with deployment identifier: " +
-              configuration.deployment_identifier.to_s
+          puts "Destroying with deployment identifier: #{configuration.deployment_identifier}"
           puts
 
           RubyTerraform.destroy(
-              chdir: configuration.configuration_directory,
-              state: configuration.state_file,
-              vars: configuration.vars.to_h,
-              input: false,
-              auto_approve: true)
+            chdir: configuration.configuration_directory,
+            state: configuration.state_file,
+            vars: configuration.vars.to_h,
+            input: false,
+            auto_approve: true
+          )
 
           puts
         end
@@ -94,7 +97,8 @@ module TerraformModule
       RubyTerraform.init(
         chdir: configuration.configuration_directory,
         from_module: File.join(FileUtils.pwd, configuration.source_directory),
-        input: false)
+        input: false
+      )
       yield configuration
     end
   end
