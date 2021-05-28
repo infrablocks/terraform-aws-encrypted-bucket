@@ -18,6 +18,9 @@ module "encrypted_bucket" {
 }
 ```
 
+See the 
+[Terraform registry entry](https://registry.terraform.io/modules/infrablocks/encrypted-bucket/aws/latest) 
+for more details.
 
 ### Inputs
 
@@ -52,6 +55,10 @@ containing a `Name` tag equal to the bucket name.
 |-------------|--------------------------------|
 | bucket_name | The name of the created bucket |
 
+### Compatibility
+
+This module is compatible with Terraform versions greater than or equal to 
+Terraform 0.14.
 
 ### Required Permissions
 
