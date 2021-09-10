@@ -32,11 +32,14 @@ resource "aws_s3_bucket" "encrypted_bucket" {
 
   force_destroy = var.allow_destroy_when_objects_present == "yes"
 
-  server_side_encryption_configuration = var.kms_key_arn != "" ? null : {
-    rule = {
-      apply_server_side_encryption_by_default = {
-        kms_master_key_id = var.kms_key_arn
-        sse_algorithm = "aws:kms"
+  dynamic "server_side_encryption_configuration" {
+    for_each = var.kms_key_arn != "" ? [1] : []
+    content {
+      rule {
+        apply_server_side_encryption_by_default {
+          kms_master_key_id = var.kms_key_arn
+          sse_algorithm = "aws:kms"
+        }
       }
     }
   }
