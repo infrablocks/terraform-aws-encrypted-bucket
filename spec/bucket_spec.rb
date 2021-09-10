@@ -214,6 +214,11 @@ describe 'Encrypted bucket' do
 
   context 'with kms_key_arn' do
     before(:all) do
+      puts
+      puts "kms_key_arn: "
+      puts output_for(:prerequisites, 'kms_key_arn')
+      puts
+
       provision(kms_key_arn: output_for(:prerequisites, 'kms_key_arn'))
     end
 
