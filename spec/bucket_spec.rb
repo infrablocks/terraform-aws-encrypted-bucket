@@ -12,7 +12,6 @@ describe 'Encrypted bucket' do
     it { should exist }
     it { should have_versioning_enabled }
     it { should_not have_mfa_delete_enabled }
-    it { should_not have_default_encryption_enabled }
     it { should have_tag('Name').value(bucket_name) }
     it { should have_tag('Thing').value("value") }
 
