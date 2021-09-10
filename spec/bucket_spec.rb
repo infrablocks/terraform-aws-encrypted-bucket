@@ -11,7 +11,6 @@ describe 'Encrypted bucket' do
   context 'with default variables' do
     it { should exist }
     it { should have_versioning_enabled }
-    it { should have_secure_transport_enabled }
     it { should_not have_mfa_delete_enabled }
     it { should have_tag('Name').value(bucket_name) }
     it { should have_tag('Thing').value("value") }
@@ -39,6 +38,23 @@ describe 'Encrypted bucket' do
       expect(statement['Condition'])
           .to(eq(JSON.parse(
               '{"StringNotEquals": {"s3:x-amz-server-side-encryption": "AES256"}}')))
+    end
+
+    it 'denies unencrypted in flight operations' do
+      policy = JSON.parse(
+          find_bucket_policy(subject.id).policy.read)
+      statements = policy['Statement']
+      statement = statements.find do |s|
+        s['Sid'] == 'DenyUnEncryptedInflightOperations'
+      end
+
+      expect(statement['Effect']).to(eq('Deny'))
+      expect(statement['Principal']).to(eq('*'))
+      expect(statement['Action']).to(eq('s3:*'))
+      expect(statement['Resource']).to(eq("arn:aws:s3:::#{bucket_name}/*"))
+      expect(statement['Condition'])
+          .to(eq(JSON.parse(
+              '{"Bool": {"aws:SecureTransport": "false"}}')))
     end
 
     it 'outputs the bucket name' do
