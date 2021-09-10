@@ -214,9 +214,7 @@ describe 'Encrypted bucket' do
   end
 
   context 'with kms_key_arn' do
-    before(:all) do
-      provision(kms_key_arn: kms_key_arn)
-    end
+    provision(kms_key_arn: kms_key_arn)
 
     it { should exist }
     it { should have_default_encryption_enabled }
