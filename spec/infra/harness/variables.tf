@@ -8,4 +8,6 @@ variable "include_source_policy_json" {}
 
 variable "allow_destroy_when_objects_present" {}
 
-variable "kms_key_arn" {}
+variable "kms_key_arn" {
+  default = ""
+}
