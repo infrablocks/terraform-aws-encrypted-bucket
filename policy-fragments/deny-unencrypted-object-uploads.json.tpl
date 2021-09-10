@@ -6,7 +6,7 @@
 
   "Condition": {
     "StringNotEquals": {
-        "s3:x-amz-server-side-encryption": "AES256"
+        "s3:x-amz-server-side-encryption": "${sse_algorithm}"
     }
   },
 

@@ -19,6 +19,8 @@ module "encrypted_bucket" {
 
   allow_destroy_when_objects_present = var.allow_destroy_when_objects_present
 
+  kms_key_arn = var.kms_key_arn
+
   tags = {
     Thing = "value"
   }

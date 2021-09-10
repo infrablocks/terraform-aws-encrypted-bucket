@@ -32,3 +32,8 @@ variable "allow_destroy_when_objects_present" {
   type = string
   default = "no"
 }
+
+variable "kms_key_arn" {
+  description = "If provided, the given key will be used to enable default server side encryption"
+  default = ""
+}

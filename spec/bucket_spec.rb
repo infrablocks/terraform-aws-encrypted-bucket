@@ -5,6 +5,7 @@ require 'pp'
 describe 'Encrypted bucket' do
   let(:region) { vars.region }
   let(:bucket_name) { vars.bucket_name }
+  let(:kms_key_arn) { output_for(:prerequisites, 'kms_key_arn') }
 
   subject { s3_bucket(bucket_name) }
 
@@ -211,6 +212,16 @@ describe 'Encrypted bucket' do
       bucket.delete!
     end
   end
+
+  context 'with kms_key_arn' do
+    before(:all) do
+      provision(kms_key_arn: kms_key_arn)
+    end
+
+    it { should exist }
+    it { should have_default_encryption_enabled }
+  end
+
 
   def capture_stdout(&block)
     output = StringIO.new
