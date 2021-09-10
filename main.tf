@@ -3,7 +3,7 @@ data "template_file" "deny_unencrypted_object_uploads_fragment" {
 
   vars = {
     bucket_name = var.bucket_name
-    sse_algorithm = var.kms_key_arn ? "aws:kms" : "AES256"
+    sse_algorithm = var.kms_key_arn != null ? "aws:kms" : "AES256"
   }
 }
 
@@ -33,7 +33,7 @@ resource "aws_s3_bucket" "encrypted_bucket" {
   force_destroy = var.allow_destroy_when_objects_present == "yes"
 
   dynamic "server_side_encryption_configuration" {
-    for_each = var.kms_key_arn ? [1] : []
+    for_each = var.kms_key_arn != null ? [1] : []
     content {
       rule {
         apply_server_side_encryption_by_default {
