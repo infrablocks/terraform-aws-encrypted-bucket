@@ -11,7 +11,7 @@ describe 'Encrypted bucket' do
   context 'with default variables' do
     it { should exist }
     it { should have_versioning_enabled }
-    it { should_not have_default_encryption_enabled }
+    it { should have_server_side_encryption(algorithm: "AES256") }
     it { should_not have_mfa_delete_enabled }
     it { should have_tag('Name').value(bucket_name) }
     it { should have_tag('Thing').value("value") }
@@ -223,7 +223,7 @@ describe 'Encrypted bucket' do
     end
 
     it { should exist }
-    it { should have_default_encryption_enabled }
+    it { should have_server_side_encryption(algorithm: "aws:kms") }
   end
 
 
