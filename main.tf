@@ -25,6 +25,32 @@ locals {
   )
 }
 
+resource "aws_s3_bucket" "access_log_bucket" {
+  bucket = "${var.bucket_name}-access-log"
+  acl    = "log-delivery-write"
+  count = var.enable_access_logging == "yes" ? 1 : 0
+
+  versioning {
+    enabled = false
+  }
+
+  dynamic "server_side_encryption_configuration" {
+    for_each = var.kms_key_arn != null ? [1] : []
+    content {
+      rule {
+        apply_server_side_encryption_by_default {
+          kms_master_key_id = var.kms_key_arn
+          sse_algorithm = "aws:kms"
+        }
+      }
+    }
+  }
+
+  tags = merge({
+    Name = var.bucket_name
+  }, var.tags)
+}
+
 resource "aws_s3_bucket" "encrypted_bucket" {
   bucket = var.bucket_name
 
@@ -38,6 +64,14 @@ resource "aws_s3_bucket" "encrypted_bucket" {
         kms_master_key_id = local.kms_master_key_id
         sse_algorithm = local.sse_algorithm
       }
+    }
+  }
+
+  dynamic logging {
+    for_each = var.enable_access_logging == "yes" ? [1] : []
+    content {
+      target_bucket = aws_s3_bucket.access_log_bucket[0].id
+      target_prefix = "log/"
     }
   }
 

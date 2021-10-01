@@ -54,3 +54,9 @@ variable "public_access_block" {
     restrict_public_buckets = false
   }
 }
+
+variable "enable_access_logging" {
+  description = "Whether or not to enable access logging (\"yes\" or \"no\")."
+  type = string
+  default = "no"
+}

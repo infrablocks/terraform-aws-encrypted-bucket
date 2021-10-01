@@ -11,6 +11,7 @@ vars:
   include_source_policy_json: "%{hiera('include_source_policy_json')}"
 
   mfa_delete: "%{hiera('mfa_delete')}"
+  enable_access_logging: "%{hiera('enable_access_logging')}"
 
   allow_destroy_when_objects_present: "%{hiera('allow_destroy_when_objects_present')}"
 
