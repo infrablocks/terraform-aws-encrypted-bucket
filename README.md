@@ -31,7 +31,8 @@ for more details.
 | source_policy_json                          | A source policy for the bucket, additional statements to enable encryption will be added to the policy              |      ""      |    no    |
 | acl                                         | The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply.            |   private    |    no    |
 | mfa_delete                                  | Enable MFA delete for either _Change the versioning state of your bucket_ or _Permanently delete an object version_ |    false     |    no    |
-| enable_access_logging  | Enable access logging for the bucket. Also creates the logging bucket                                                                    | no           | no       |
+| enable_access_logging                       | Enable access logging for the bucket. Also creates the logging bucket                                               | no           | no       |
+| bucket_key_enabled                          | Whether or not to use [S3 Bucket Keys](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-key.html)       | false        | no       |
 | tags                                        | A map of additional tags to set on the bucket                                                                       |      {}      |    no    |
 | public_access_block                         | An object of public access block settings to apply to the bucket                                                    |  see below   |    no    |
 | public_access_block.block_public_acls       | Whether to block public ACLs                                                                                        |    false     |    no    |
