@@ -26,7 +26,9 @@ locals {
 }
 
 resource "aws_s3_bucket" "access_log_bucket" {
-  bucket = "${var.bucket_name}-access-log"
+  bucket = var.access_log_bucket_name != null
+    ? var.access_log_bucket_name
+    : "${var.bucket_name}-access-log"
   acl    = "log-delivery-write"
   count = var.enable_access_logging == "yes" ? 1 : 0
 
