@@ -41,8 +41,8 @@ resource "aws_s3_bucket" "access_log_bucket" {
         apply_server_side_encryption_by_default {
           kms_master_key_id = var.kms_key_arn
           sse_algorithm = "aws:kms"
-          bucket_key_enabled = var.bucket_key_enabled
         }
+        bucket_key_enabled = var.bucket_key_enabled
       }
     }
   }
@@ -65,6 +65,7 @@ resource "aws_s3_bucket" "encrypted_bucket" {
         kms_master_key_id = local.kms_master_key_id
         sse_algorithm = local.sse_algorithm
       }
+      bucket_key_enabled = var.bucket_key_enabled
     }
   }
 
