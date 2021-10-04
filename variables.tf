@@ -73,7 +73,7 @@ variable "access_log_bucket_name" {
     condition = (var.access_log_bucket_name == null
     ? true
     : length(var.access_log_bucket_name) < 63)
-    error_message = "Expected length of bucket to be in the range (0 - 63)"
+    error_message = "Expected length of bucket to be in the range (0 - 63)."
   }
 }
 
