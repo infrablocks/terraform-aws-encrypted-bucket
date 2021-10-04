@@ -69,6 +69,8 @@ variable "bucket_key_enabled" {
 variable "access_log_bucket_name" {
   description = "(Optional) Access log bucket name, Otherwise \"-access-log\" appended to bucket_name."
   type = string
+  default = null
+
   validation {
     condition = (var.access_log_bucket_name == null
     ? true
