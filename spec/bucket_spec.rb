@@ -253,7 +253,12 @@ describe 'Encrypted bucket' do
     end
 
     it { should exist }
-    it { should have_logging_enabled(target_bucket: access_log_bucket_name, target_prefix: 'logs/') }
+
+    it "should have logging enabled" do
+        bucket_info = s3_client.get_bucket_logging({bucket: bucket_name})
+        expect(bucket_info.logging_enabled.target_bucket).to(eq(access_log_bucket_name))
+        expect(bucket_info.logging_enabled.target_prefix).to(eq('log/'))
+    end
 
     describe 'access log bucket created' do
      subject { s3_bucket(access_log_bucket_name) }
