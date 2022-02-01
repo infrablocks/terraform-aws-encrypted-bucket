@@ -88,7 +88,7 @@ Development
 In order for the build to run correctly, a few tools will need to be installed on your
 development machine:
 
-* Ruby (2.6.0)
+* Ruby (2.7.5)
 * Bundler
 * git
 * git-crypt
@@ -114,9 +114,9 @@ brew install ruby-build
 echo 'eval "$(rbenv init - bash)"' >> ~/.bash_profile
 echo 'eval "$(rbenv init - zsh)"' >> ~/.zshrc
 eval "$(rbenv init -)"
-rbenv install 2.6.0
+rbenv install 2.7.5
 rbenv rehash
-rbenv local 2.6.0
+rbenv local 2.7.5
 gem install bundler
 
 # git, git-crypt, gnupg
