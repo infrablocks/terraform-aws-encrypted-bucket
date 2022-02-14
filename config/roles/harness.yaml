@@ -13,5 +13,3 @@ vars:
   mfa_delete: "%{hiera('mfa_delete')}"
 
   allow_destroy_when_objects_present: "%{hiera('allow_destroy_when_objects_present')}"
-
-  kms_key_arn: "%{hiera('kms_key_arn')}"
