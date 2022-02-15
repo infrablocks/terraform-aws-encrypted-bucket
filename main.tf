@@ -1,5 +1,5 @@
 locals {
-  sse_algorithm = var.kms_key_arn != null ? "aws:kms" : "AES256"
+  sse_algorithm = var.kms_key_arn != null || var.kms_key_arn != '' ? "aws:kms" : "AES256"
 }
 
 data "template_file" "deny_unencrypted_object_uploads_fragment" {
