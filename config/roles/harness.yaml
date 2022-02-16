@@ -15,3 +15,5 @@ vars:
   allow_destroy_when_objects_present: "%{hiera('allow_destroy_when_objects_present')}"
 
   kms_key_arn: "%{hiera('kms_key_arn')}"
+
+  public_access_block: "%{hiera('public_access_block')}"

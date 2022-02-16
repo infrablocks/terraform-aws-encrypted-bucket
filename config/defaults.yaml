@@ -13,3 +13,9 @@ include_source_policy_json: "false"
 mfa_delete: "false"
 
 allow_destroy_when_objects_present: "no"
+
+public_access_block:
+  block_public_acls: "false"
+  block_public_policy: "false"
+  ignore_public_acls: "false"
+  restrict_public_buckets: "false"

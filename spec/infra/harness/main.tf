@@ -21,6 +21,8 @@ module "encrypted_bucket" {
 
   kms_key_arn = var.kms_key_arn
 
+  public_access_block = var.public_access_block
+
   tags = {
     Thing = "value"
   }

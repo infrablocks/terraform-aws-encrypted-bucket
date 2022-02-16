@@ -37,3 +37,19 @@ variable "kms_key_arn" {
   description = "If provided, the given key will be used to enable default server side encryption"
   default = null
 }
+
+variable "public_access_block" {
+  description = "If provided, will configure block public access settings for your bucket"
+  type = object({
+    block_public_acls = bool
+    block_public_policy = bool
+    ignore_public_acls = bool
+    restrict_public_buckets = bool
+  })
+  default = {
+    block_public_acls = false
+    block_public_policy = false
+    ignore_public_acls = false
+    restrict_public_buckets = false
+  }
+}

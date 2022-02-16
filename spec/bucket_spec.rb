@@ -67,6 +67,12 @@ describe 'Encrypted bucket' do
       expect(output_for(:harness, 'bucket_arn'))
           .to(eq("arn:aws:s3:::#{bucket_name}"))
     end
+
+    it 'does not have block public access settings' do
+      expect do
+        s3_client.get_public_access_block({ bucket: bucket_name })
+      end.to(raise_error(Aws::S3::Errors::NoSuchPublicAccessBlockConfiguration))
+    end
   end
 
   context 'with source policy json' do
@@ -215,15 +221,29 @@ describe 'Encrypted bucket' do
 
   context 'with kms_key_arn' do
     before(:all) do
-      puts
-      puts "kms_key_arn is: #{output_for(:prerequisites, 'kms_key_arn')}"
-      puts
-
       provision(kms_key_arn: output_for(:prerequisites, 'kms_key_arn'))
     end
 
     it { should exist }
-    it { should have_server_side_encryption(algorithm: "aws:kms") }
+    it { should have_server_side_encryption(algorithm: 'aws:kms') }
+  end
+
+  context 'with block public access settings' do
+    before(:all) do
+      provision(public_access_block: {
+                  block_public_acls: true,
+                  block_public_policy: true,
+                  ignore_public_acls: false,
+                  restrict_public_buckets: false
+                })
+    end
+
+    it 'has block public access settings' do
+      pab_config = s3_client.get_public_access_block({ bucket: bucket_name }).public_access_block_configuration
+
+      expect(pab_config.block_public_acls).to(eq(true))
+      expect(pab_config.block_public_policy).to(eq(true))
+    end
   end
 
 
