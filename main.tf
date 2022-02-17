@@ -25,10 +25,29 @@ locals {
   )
 }
 
-resource "aws_s3_bucket" "access_log_bucket" {
-  bucket = (var.access_log_bucket_name != null
+locals {
+  access_bucket_name = (var.access_log_bucket_name != null
   ? var.access_log_bucket_name
   : "${var.bucket_name}-access-log")
+}
+data "template_file" "deny_unencrypted_inflight_operations_fragment_access_bucket" {
+  template = file("${path.module}/policy-fragments/deny-unencrypted-inflight-operations.json.tpl")
+  vars = {
+    bucket_name = local.access_bucket_name
+  }
+}
+
+data "template_file" "access_bucket_policy" {
+  template = file("${path.module}/policies/access-bucket-policy.json.tpl")
+
+  vars = {
+    bucket_name = local.access_bucket_name
+    deny_unencrypted_inflight_operations_fragment = data.template_file.deny_unencrypted_inflight_operations_fragment_access_bucket.rendered
+  }
+}
+
+resource "aws_s3_bucket" "access_log_bucket" {
+  bucket = local.access_bucket_name
   acl    = "log-delivery-write"
   count = var.enable_access_logging == "yes" ? 1 : 0
 
@@ -36,16 +55,13 @@ resource "aws_s3_bucket" "access_log_bucket" {
     enabled = false
   }
 
-  dynamic "server_side_encryption_configuration" {
-    for_each = var.kms_key_arn != null ? [1] : []
-    content {
-      rule {
-        apply_server_side_encryption_by_default {
-          kms_master_key_id = var.kms_key_arn
-          sse_algorithm = "aws:kms"
-        }
-        bucket_key_enabled = var.bucket_key_enabled
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        kms_master_key_id = var.kms_key_arn
+        sse_algorithm = local.sse_algorithm
       }
+      bucket_key_enabled = var.bucket_key_enabled
     }
   }
 
@@ -115,3 +131,16 @@ resource "aws_s3_bucket_public_access_block" "public_access_block" {
   ignore_public_acls = var.public_access_block.ignore_public_acls
   restrict_public_buckets = var.public_access_block.restrict_public_buckets
 }
+
+data "aws_iam_policy_document" "access_bucket_policy_document" {
+  source_json = var.source_policy_json
+  override_json = data.template_file.access_bucket_policy.rendered
+}
+
+resource "aws_s3_bucket_policy" "access_bucket" {
+  count = var.enable_access_logging == "yes" ? 1 : 0
+  bucket = aws_s3_bucket.access_log_bucket[0].id
+  policy = data.aws_iam_policy_document.access_bucket_policy_document.json
+}
+
+
