@@ -24,14 +24,19 @@ for more details.
 
 ### Inputs
 
-| Name                   | Description                                                                                                         | Default      | Required |
-|------------------------|---------------------------------------------------------------------------------------------------------------------|:------------:|:--------:|
-| bucket_name            | The name to use for the encrypted S3 bucket                                                                         | -            | yes      |
-| bucket_policy_template | A template for the policy to apply to the bucket                                                                    | see policies | no       |
-| source_policy_json     | A source policy for the bucket, additional statements to enable encryption will be added to the policy              | ""           | no       |
-| acl                    | The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply.            | private      | no       |
-| mfa_delete             | Enable MFA delete for either _Change the versioning state of your bucket_ or _Permanently delete an object version_ | false        | no       |
-| tags                   | A map of additional tags to set on the bucket                                                                       | {}           | no       |
+| Name                                        | Description                                                                                                         |   Default    | Required |
+|---------------------------------------------|---------------------------------------------------------------------------------------------------------------------|:------------:|:--------:|
+| bucket_name                                 | The name to use for the encrypted S3 bucket                                                                         |      -       |   yes    |
+| bucket_policy_template                      | A template for the policy to apply to the bucket                                                                    | see policies |    no    |
+| source_policy_json                          | A source policy for the bucket, additional statements to enable encryption will be added to the policy              |      ""      |    no    |
+| acl                                         | The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply.            |   private    |    no    |
+| mfa_delete                                  | Enable MFA delete for either _Change the versioning state of your bucket_ or _Permanently delete an object version_ |    false     |    no    |
+| tags                                        | A map of additional tags to set on the bucket                                                                       |      {}      |    no    |
+| public_access_block                         | An object of public access block settings to apply to the bucket                                                    |  see below   |    no    |
+| public_access_block.block_public_acls       | Whether to block public ACLs                                                                                        |    false     |    no    |
+| public_access_block.block_public_policy     | Whether to block public bucket policies                                                                             |    false     |    no    |
+| public_access_block.ignore_public_acls      | Whether to ignore public ACLs                                                                                       |    false     |    no    |
+| public_access_block.restrict_public_buckets | Whether to restrict public buckets                                                                                  |    false     |    no    |
 
 
 By default, a bucket policy that enforces encrypted inflight operations and 
@@ -79,6 +84,11 @@ Terraform 0.14.
 * s3:PutBucketAcl
 * s3:DeleteBucketPolicy
 * s3:DeleteBucket
+
+If public access block settings are specified
+* s3:GetBucketPolicyStatus
+* s3:GetBucketPublicAccessBlock
+* s3:PutBucketPublicAccessBlock
 
 Development
 -----------
