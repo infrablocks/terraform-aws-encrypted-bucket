@@ -11,3 +11,8 @@ BACKWARDS INCOMPATIBILITIES / NOTES:
 `var.public_access_block`. See the [inputs section in the README](https://github.com/infrablocks/terraform-aws-encrypted-bucket#inputs)
 or [Terraform registry entry](https://registry.terraform.io/modules/infrablocks/encrypted-bucket/aws/latest) for more details.
 The extra permissions required are specified in [required permissions](https://github.com/infrablocks/terraform-aws-encrypted-bucket#required-permissions).
+
+### Changed
+
+* Removed `hashicorp/template` provider. This allows the module to be used with terraform
+on arm64 architectures.

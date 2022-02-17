@@ -1,32 +1,27 @@
 locals {
   sse_algorithm = var.kms_key_arn == null || var.kms_key_arn == "" ? "AES256" : "aws:kms"
-}
 
-data "template_file" "deny_unencrypted_object_uploads_fragment" {
-  template = file("${path.module}/policy-fragments/deny-unencrypted-object-uploads.json.tpl")
+  deny_unencrypted_object_uploads_fragment = templatefile(
+    "${path.module}/policy-fragments/deny-unencrypted-object-uploads.json.tpl",
+    {
+      bucket_name = var.bucket_name
+      sse_algorithm = local.sse_algorithm
+    }
+  )
 
-  vars = {
-    bucket_name = var.bucket_name
-    sse_algorithm = local.sse_algorithm
-  }
-}
+  deny_unencrypted_inflight_operations_fragment = templatefile(
+    "${path.module}/policy-fragments/deny-unencrypted-inflight-operations.json.tpl",
+    { bucket_name = var.bucket_name }
+  )
 
-data "template_file" "deny_unencrypted_inflight_operations_fragment" {
-  template = file("${path.module}/policy-fragments/deny-unencrypted-inflight-operations.json.tpl")
-
-  vars = {
-    bucket_name = var.bucket_name
-  }
-}
-
-data "template_file" "encrypted_bucket_policy" {
-  template = coalesce(var.bucket_policy_template, file("${path.module}/policies/bucket-policy.json.tpl"))
-
-  vars = {
-    bucket_name = var.bucket_name
-    deny_unencrypted_object_upload_fragment = data.template_file.deny_unencrypted_object_uploads_fragment.rendered
-    deny_unencrypted_inflight_operations_fragment = data.template_file.deny_unencrypted_inflight_operations_fragment.rendered
-  }
+  encrypted_bucket_policy = templatefile(
+    "${path.module}/policies/bucket-policy.json.tpl",
+    {
+      bucket_name = var.bucket_name
+      deny_unencrypted_object_upload_fragment = local.deny_unencrypted_object_uploads_fragment
+      deny_unencrypted_inflight_operations_fragment = local.deny_unencrypted_inflight_operations_fragment
+    }
+  )
 }
 
 resource "aws_s3_bucket" "encrypted_bucket" {
@@ -57,7 +52,7 @@ resource "aws_s3_bucket" "encrypted_bucket" {
 
 data "aws_iam_policy_document" "encrypted_bucket_policy_document" {
   source_json = var.source_policy_json
-  override_json = data.template_file.encrypted_bucket_policy.rendered
+  override_json = local.encrypted_bucket_policy
 }
 
 resource "aws_s3_bucket_policy" "encrypted_bucket" {
