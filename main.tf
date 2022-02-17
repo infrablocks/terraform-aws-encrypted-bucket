@@ -2,6 +2,9 @@ locals {
   sse_algorithm = var.kms_key_arn == "" ? "AES256" : "aws:kms"
   kms_master_key_id = var.kms_key_arn == "" ? null : var.kms_key_arn
 
+  access_bucket_name = (var.access_log_bucket_name != null && var.access_log_bucket_name != ""
+  ? var.access_log_bucket_name : "${var.bucket_name}-access-log")
+
   deny_unencrypted_object_uploads_fragment = templatefile(
     "${path.module}/policy-fragments/deny-unencrypted-object-uploads.json.tpl",
     {
@@ -23,27 +26,19 @@ locals {
       deny_unencrypted_inflight_operations_fragment = local.deny_unencrypted_inflight_operations_fragment
     }
   )
-}
 
-locals {
-  access_bucket_name = (var.access_log_bucket_name != null
-  ? var.access_log_bucket_name
-  : "${var.bucket_name}-access-log")
-}
-data "template_file" "deny_unencrypted_inflight_operations_fragment_access_bucket" {
-  template = file("${path.module}/policy-fragments/deny-unencrypted-inflight-operations.json.tpl")
-  vars = {
-    bucket_name = local.access_bucket_name
-  }
-}
+  access_bucket_deny_unencrypted_inflight_operations_fragment = templatefile(
+    "${path.module}/policy-fragments/deny-unencrypted-inflight-operations.json.tpl",
+    { bucket_name = local.access_bucket_name }
+  )
 
-data "template_file" "access_bucket_policy" {
-  template = file("${path.module}/policies/access-bucket-policy.json.tpl")
-
-  vars = {
-    bucket_name = local.access_bucket_name
-    deny_unencrypted_inflight_operations_fragment = data.template_file.deny_unencrypted_inflight_operations_fragment_access_bucket.rendered
-  }
+  access_bucket_policy = templatefile(
+    "${path.module}/policies/access-bucket-policy.json.tpl",
+    {
+      bucket_name = local.access_bucket_name
+      deny_unencrypted_inflight_operations_fragment = local.access_bucket_deny_unencrypted_inflight_operations_fragment
+    }
+  )
 }
 
 resource "aws_s3_bucket" "access_log_bucket" {
@@ -134,7 +129,7 @@ resource "aws_s3_bucket_public_access_block" "public_access_block" {
 
 data "aws_iam_policy_document" "access_bucket_policy_document" {
   source_json = var.source_policy_json
-  override_json = data.template_file.access_bucket_policy.rendered
+  override_json = local.access_bucket_policy
 }
 
 resource "aws_s3_bucket_policy" "access_bucket" {
