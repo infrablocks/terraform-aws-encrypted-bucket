@@ -10,6 +10,8 @@
 
 * Removed `hashicorp/template` provider. This allows the module to be used with terraform
   on arm64 architectures.
+* `kms_key_arn` is now an empty string by default, which is converted to null
+when being passed to `server_side_encryption_configuration` to preserve module defaults.
 
 ## 2.0.0 (May 28th, 2021)
 
