@@ -1,5 +1,6 @@
 locals {
-  sse_algorithm = var.kms_key_arn == null || var.kms_key_arn == "" ? "AES256" : "aws:kms"
+  sse_algorithm = var.kms_key_arn == "" ? "AES256" : "aws:kms"
+  kms_master_key_id = var.kms_key_arn == "" ? null : var.kms_key_arn
 
   deny_unencrypted_object_uploads_fragment = templatefile(
     "${path.module}/policy-fragments/deny-unencrypted-object-uploads.json.tpl",
@@ -34,7 +35,7 @@ resource "aws_s3_bucket" "encrypted_bucket" {
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
-        kms_master_key_id = var.kms_key_arn
+        kms_master_key_id = local.kms_master_key_id
         sse_algorithm = local.sse_algorithm
       }
     }
