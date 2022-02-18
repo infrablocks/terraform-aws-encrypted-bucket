@@ -11,7 +11,8 @@ RubyTerraform.configure do |c|
     "#{msg}\n"
   end
 
-  c.binary = '/opt/homebrew/bin/terraform'
+  c.binary = Paths.from_project_root_directory(
+      'vendor', 'terraform', 'bin', 'terraform')
   c.logger = logger
 end
 
