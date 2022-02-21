@@ -5,6 +5,10 @@
   `var.public_access_block`. See the [inputs section in the README](https://github.com/infrablocks/terraform-aws-encrypted-bucket#inputs)
   or [Terraform registry entry](https://registry.terraform.io/modules/infrablocks/encrypted-bucket/aws/latest) for more details.
   The extra permissions required are specified in [required permissions](https://github.com/infrablocks/terraform-aws-encrypted-bucket#required-permissions).
+* Access logging can be enabled with `var.enable_access_logging` (this will also creates a new bucket for the access logs). 
+  To change the default name of the access bucket(`<bucket-name>-access-log`) use `var.access_log_bucket_name`. This is off by default.
+* [S3 Bucket Keys](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-key.html) can be enabled (when encryption is set to kms)
+  by configuring `var.bucket_key_enabled`. This is off by default.
 
 ### Changed
 
