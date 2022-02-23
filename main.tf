@@ -2,6 +2,9 @@ locals {
   sse_algorithm = var.kms_key_arn == "" ? "AES256" : "aws:kms"
   kms_master_key_id = var.kms_key_arn == "" ? null : var.kms_key_arn
 
+  access_bucket_name = (var.access_log_bucket_name != null && var.access_log_bucket_name != ""
+  ? var.access_log_bucket_name : "${var.bucket_name}-access-log")
+
   deny_unencrypted_object_uploads_fragment = templatefile(
     "${path.module}/policy-fragments/deny-unencrypted-object-uploads.json.tpl",
     {
@@ -23,6 +26,43 @@ locals {
       deny_unencrypted_inflight_operations_fragment = local.deny_unencrypted_inflight_operations_fragment
     }
   )
+
+  access_bucket_deny_unencrypted_inflight_operations_fragment = templatefile(
+    "${path.module}/policy-fragments/deny-unencrypted-inflight-operations.json.tpl",
+    { bucket_name = local.access_bucket_name }
+  )
+
+  access_bucket_policy = templatefile(
+    "${path.module}/policies/access-bucket-policy.json.tpl",
+    {
+      bucket_name = local.access_bucket_name
+      deny_unencrypted_inflight_operations_fragment = local.access_bucket_deny_unencrypted_inflight_operations_fragment
+    }
+  )
+}
+
+resource "aws_s3_bucket" "access_log_bucket" {
+  bucket = local.access_bucket_name
+  acl    = "log-delivery-write"
+  count = var.enable_access_logging == "yes" ? 1 : 0
+
+  versioning {
+    enabled = false
+  }
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        kms_master_key_id = var.kms_key_arn
+        sse_algorithm = local.sse_algorithm
+      }
+      bucket_key_enabled = var.bucket_key_enabled
+    }
+  }
+
+  tags = merge({
+    Name = var.bucket_name
+  }, var.tags)
 }
 
 resource "aws_s3_bucket" "encrypted_bucket" {
@@ -38,6 +78,15 @@ resource "aws_s3_bucket" "encrypted_bucket" {
         kms_master_key_id = local.kms_master_key_id
         sse_algorithm = local.sse_algorithm
       }
+      bucket_key_enabled = var.bucket_key_enabled
+    }
+  }
+
+  dynamic logging {
+    for_each = var.enable_access_logging == "yes" ? [1] : []
+    content {
+      target_bucket = aws_s3_bucket.access_log_bucket[0].id
+      target_prefix = "log/"
     }
   }
 
@@ -77,3 +126,16 @@ resource "aws_s3_bucket_public_access_block" "public_access_block" {
   ignore_public_acls = var.public_access_block.ignore_public_acls
   restrict_public_buckets = var.public_access_block.restrict_public_buckets
 }
+
+data "aws_iam_policy_document" "access_bucket_policy_document" {
+  source_json = var.source_policy_json
+  override_json = local.access_bucket_policy
+}
+
+resource "aws_s3_bucket_policy" "access_bucket" {
+  count = var.enable_access_logging == "yes" ? 1 : 0
+  bucket = aws_s3_bucket.access_log_bucket[0].id
+  policy = data.aws_iam_policy_document.access_bucket_policy_document.json
+}
+
+

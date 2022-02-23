@@ -5,6 +5,7 @@ require 'pp'
 describe 'Encrypted bucket' do
   let(:region) { vars.region }
   let(:bucket_name) { vars.bucket_name }
+  let(:access_log_bucket_name) { "#{vars.bucket_name}-access-log" }
 
   subject { s3_bucket(bucket_name) }
 
@@ -243,6 +244,25 @@ describe 'Encrypted bucket' do
 
       expect(pab_config.block_public_acls).to(eq(true))
       expect(pab_config.block_public_policy).to(eq(true))
+    end
+  end
+
+  context 'with access logging' do
+    before(:all) do
+      provision(enable_access_logging: "yes")
+    end
+
+    it { should exist }
+
+    it "should have logging enabled" do
+        bucket_info = s3_client.get_bucket_logging({bucket: bucket_name})
+        expect(bucket_info.logging_enabled.target_bucket).to(eq(access_log_bucket_name))
+        expect(bucket_info.logging_enabled.target_prefix).to(eq('log/'))
+    end
+
+    describe 'access log bucket created' do
+     subject { s3_bucket(access_log_bucket_name) }
+     it { should exist }
     end
   end
 

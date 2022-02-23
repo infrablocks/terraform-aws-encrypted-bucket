@@ -54,3 +54,28 @@ variable "public_access_block" {
     restrict_public_buckets = false
   }
 }
+
+variable "enable_access_logging" {
+  description = "Whether or not to enable access logging (\"yes\" or \"no\")."
+  type = string
+  default = "no"
+}
+
+variable "bucket_key_enabled" {
+  description = "Whether or not to use Amazon S3 Bucket Keys for SSE-KMS."
+  default = false
+}
+
+variable "access_log_bucket_name" {
+  description = "(Optional) Access log bucket name, Otherwise \"-access-log\" appended to bucket_name."
+  type = string
+  default = null
+
+  validation {
+    condition = (var.access_log_bucket_name == null
+    ? true
+    : length(var.access_log_bucket_name) < 63)
+    error_message = "Expected length of bucket to be in the range (0 - 63)."
+  }
+}
+
