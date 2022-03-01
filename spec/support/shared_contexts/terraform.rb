@@ -8,11 +8,11 @@ require_relative '../terraform_module'
 shared_context :terraform do
   include Awspec::Helper::Finder
 
-  let(:vars) do
-    OpenStruct.new(
+  def vars
+    @vars ||= OpenStruct.new(
       TerraformModule.configuration
-      .for(:harness)
-      .vars
+                     .for(:harness)
+                     .vars
     )
   end
 
@@ -39,9 +39,9 @@ shared_context :terraform do
 
   def destroy(overrides = nil)
     TerraformModule.destroy_for(
-        :harness,
-        TerraformModule.configuration.for(:harness, overrides).vars,
-        force: true)
+      :harness,
+      TerraformModule.configuration.for(:harness, overrides).vars,
+      force: true)
   end
 
   def reprovision(overrides = nil)
