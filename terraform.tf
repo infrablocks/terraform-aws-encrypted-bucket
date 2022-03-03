@@ -7,7 +7,7 @@ terraform {
       version = "~> 3.29"
     }
     template = {
-      source = "hashicorp/terraform"
+      source = "hashicorp/template"
       version = "~> 2.2"
     }
   }
