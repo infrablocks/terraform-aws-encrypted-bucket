@@ -30,27 +30,27 @@ for more details.
 
 ### Inputs
 
-| Name                                        | Description                                                                                                                           |   Default    | Required |
-|---------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|:------------:|:--------:|
-| bucket_name                                 | The name to use for the encrypted S3 bucket.                                                                                          |      -       |   yes    |
-| bucket_policy_template                      | A template for the policy to apply to the bucket. Deprecated - use source_policy_json instead.                                        | see policies |    no    |
-| source_policy_json                          | A source policy for the bucket, additional statements to enable encryption will be added to the policy.                               |      ""      |    no    |
-| acl                                         | The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply.                              |  "private"   |    no    |
-| tags                                        | A map of additional tags to set on the bucket                                                                                         |      {}      |    no    |
-| kms_key_arn                                 | If provided, "aws:kms" encryption will be enforced using the KMS key with the provided ARN. By default, "AES-256" encryption is used. |      ""      |    no    |
-| access_log_bucket_name                      | The name of the bucket to use for access logging, required when enable_access_logging is "yes".                                       |      ""      |    no    |
-| access_log_object_key_prefix                | The key prefix to use for log objects for access logging.                                                                             |      ""      |    no    |
-| public_access_block                         | An object of public access block settings to apply to the bucket                                                                      |  see below   |    no    |
-| public_access_block.block_public_acls       | Whether to block public ACLs                                                                                                          |    false     |    no    |
-| public_access_block.block_public_policy     | Whether to block public bucket policies                                                                                               |    false     |    no    |
-| public_access_block.ignore_public_acls      | Whether to ignore public ACLs                                                                                                         |    false     |    no    |
-| public_access_block.restrict_public_buckets | Whether to restrict public buckets                                                                                                    |    false     |    no    |
-| mfa_delete                                  | Whether or not to enable MFA delete on the bucket ("true" or "false"). Deprecated - use enable_mfa_delete instead.                    |   "false"    |    no    |
-| enable_mfa_delete                           | Whether or not to enable MFA delete on the bucket ("yes" or "no").                                                                    |     "no"     |    no    |
-| enable_versioning                           | Whether or not to enable versioning on the bucket ("yes" or "no").                                                                    |    "yes"     |    no    |
-| enable_access_logging                       | Whether or not to enable access logging on the bucket ("yes" or "no").                                                                |     "no"     |    no    |
-| enable_bucket_key                           | Whether or not to use an Amazon S3 Bucket Key for SSE-KMS. ("yes" or "no").                                                           |     "no"     |    no    |
-| allow_destroy_when_objects_present          | Whether or not to allow the bucket to be destroyed if it still contains objects ("yes" or "no").                                      |     "no"     |    no    |
+| Name                                        | Description                                                                                                                                          |   Default    | Required |
+|---------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|:------------:|:--------:|
+| bucket_name                                 | The name to use for the encrypted S3 bucket.                                                                                                         |      -       |   yes    |
+| bucket_policy_template                      | A template for the policy to apply to the bucket. Deprecated - use source_policy_json instead.                                                       | see policies |    no    |
+| source_policy_json                          | A source policy for the bucket, additional statements to enable encryption will be added to the policy.                                              |      ""      |    no    |
+| acl                                         | The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply.                                             |  "private"   |    no    |
+| tags                                        | A map of additional tags to set on the bucket                                                                                                        |      {}      |    no    |
+| kms_key_arn                                 | If provided, "aws:kms" encryption will be enforced using the KMS key with the provided ARN. By default, "AES-256" encryption is used.                |      ""      |    no    |
+| access_log_bucket_name                      | The name of the bucket to use for access logging, required when enable_access_logging is "yes".                                                      |      ""      |    no    |
+| access_log_object_key_prefix                | The key prefix to use for log objects for access logging.                                                                                            |      ""      |    no    |
+| public_access_block                         | An object of public access block settings to apply to the bucket                                                                                     |  see below   |    no    |
+| public_access_block.block_public_acls       | Whether to block public ACLs                                                                                                                         |    false     |    no    |
+| public_access_block.block_public_policy     | Whether to block public bucket policies                                                                                                              |    false     |    no    |
+| public_access_block.ignore_public_acls      | Whether to ignore public ACLs                                                                                                                        |    false     |    no    |
+| public_access_block.restrict_public_buckets | Whether to restrict public buckets                                                                                                                   |    false     |    no    |
+| mfa_delete                                  | Whether or not to enable MFA delete on the bucket ("true" or "false"). Deprecated - use enable_mfa_delete instead.                                   |   "false"    |    no    |
+| enable_mfa_delete                           | Whether or not to enable MFA delete on the bucket ("yes" or "no").                                                                                   |     "no"     |    no    |
+| enable_versioning                           | Whether or not to enable versioning on the bucket ("yes" or "no").                                                                                   |    "yes"     |    no    |
+| enable_access_logging                       | Whether or not to enable access logging on the bucket ("yes" or "no").                                                                               |     "no"     |    no    |
+| enable_bucket_key                           | Whether or not to use an Amazon [S3 Bucket Key](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-key.html) for SSE-KMS. ("yes" or "no"). |     "no"     |    no    |
+| allow_destroy_when_objects_present          | Whether or not to allow the bucket to be destroyed if it still contains objects ("yes" or "no").                                                     |     "no"     |    no    |
 
 By default, a bucket policy that enforces encrypted inflight operations, 
 encryption using the correct algorithm, and encryption using the correct key
