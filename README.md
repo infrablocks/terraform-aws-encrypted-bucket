@@ -7,7 +7,7 @@ Terraform AWS Encrypted Bucket
        style="width: 220px;">
 </a>
 
-Built with care by [Atomic](https://go-atomic.io/)
+Built with ❤️ by [Atomic](https://go-atomic.io/)
 
 ---
 
