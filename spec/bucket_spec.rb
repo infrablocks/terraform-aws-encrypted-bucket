@@ -363,58 +363,6 @@ describe 'Encrypted bucket' do
     end
   end
 
-  context 'when mfa_delete is "true"' do
-    let(:plan_output) do
-      capture_stdout do
-        plan(mfa_delete: 'true',
-             enable_mfa_delete: '')
-      end
-    end
-
-    subject { plan_output }
-
-    it { is_expected.to include('mfa_delete = false -> true') }
-  end
-
-  context 'when enable_mfa_delete is "yes"' do
-    let(:plan_output) do
-      capture_stdout do
-        plan(enable_mfa_delete: 'yes',
-             mfa_delete: '')
-      end
-    end
-
-    subject { plan_output }
-
-    it { is_expected.to include('mfa_delete = false -> true') }
-  end
-
-  context 'when enable_access_logging is "yes"' do
-    before(:all) do
-      provision(
-        enable_access_logging: 'yes',
-        access_log_bucket_name:
-          output_for(:prerequisites, 'access_log_bucket_name'),
-        access_log_object_key_prefix: 'logs/')
-    end
-
-    it do
-      should(
-        have_logging_enabled(
-          target_bucket:
-            output_for(:prerequisites, 'access_log_bucket_name'),
-          target_prefix: 'logs/'))
-    end
-  end
-
-  context 'when enable_access_logging is "no"' do
-    before(:all) do
-      provision(enable_access_logging: 'no')
-    end
-
-    it { should_not(have_logging_enabled) }
-  end
-
   context 'when allow_destroy_when_objects_present is "yes"' do
     before(:all) do
       provision(allow_destroy_when_objects_present: 'yes')
@@ -470,6 +418,58 @@ describe 'Encrypted bucket' do
       bucket = Aws::S3::Bucket.new(bucket_name)
       bucket.delete!
     end
+  end
+
+  context 'when mfa_delete is "true"' do
+    let(:plan_output) do
+      capture_stdout do
+        plan(mfa_delete: 'true',
+             enable_mfa_delete: '')
+      end
+    end
+
+    subject { plan_output }
+
+    it { is_expected.to include('mfa_delete = false -> true') }
+  end
+
+  context 'when enable_mfa_delete is "yes"' do
+    let(:plan_output) do
+      capture_stdout do
+        plan(enable_mfa_delete: 'yes',
+             mfa_delete: '')
+      end
+    end
+
+    subject { plan_output }
+
+    it { is_expected.to include('mfa_delete = false -> true') }
+  end
+
+  context 'when enable_access_logging is "yes"' do
+    before(:all) do
+      provision(
+        enable_access_logging: 'yes',
+        access_log_bucket_name:
+          output_for(:prerequisites, 'access_log_bucket_name'),
+        access_log_object_key_prefix: 'logs/')
+    end
+
+    it do
+      should(
+        have_logging_enabled(
+          target_bucket:
+            output_for(:prerequisites, 'access_log_bucket_name'),
+          target_prefix: 'logs/'))
+    end
+  end
+
+  context 'when enable_access_logging is "no"' do
+    before(:all) do
+      provision(enable_access_logging: 'no')
+    end
+
+    it { should_not(have_logging_enabled) }
   end
 
   def deny_encryption_using_incorrect_algorithm_statement(
