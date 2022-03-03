@@ -3,9 +3,15 @@ Terraform AWS Encrypted Bucket
 
 [![CircleCI](https://circleci.com/gh/infrablocks/terraform-aws-encrypted-bucket.svg?style=svg)](https://circleci.com/gh/infrablocks/terraform-aws-encrypted-bucket)
 
-![Atomic Logo](https://github.com/infrablocks/terraform-aws-encrypted-bucket/raw/main/docs/images/atomic-logo-monochrome-2.png)
+<a href="https://go-atomic.io/">
+  <img src="https://github.com/infrablocks/terraform-aws-encrypted-bucket/raw/main/docs/images/atomic-logo-monochrome-2.png"
+       alt="Atomic Logo"
+       style="width: 220px;">
+</a>
 
 Built with care by [Atomic](https://go-atomic.io/)
+
+---
 
 A Terraform module for building an encrypted bucket in AWS S3.
 
