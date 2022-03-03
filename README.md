@@ -1,10 +1,11 @@
 Terraform AWS Encrypted Bucket
 ==============================
 
-<a href="https://go-atomic.io/">
+<a href="https://go-atomic.io/"
+   style="display: block; padding: 5px;">
   <img src="https://github.com/infrablocks/terraform-aws-encrypted-bucket/raw/main/docs/images/atomic-logo-monochrome-2.png"
        alt="Atomic Logo"
-       style="width: 220px; padding: 5px;">
+       style="width: 220px">
 </a>
 
 Built with ❤️ by [Atomic](https://go-atomic.io/)
