@@ -1,13 +1,44 @@
 ## Unreleased
 
+## 2.2.0 (Mar 3rd, 2022)
+
 ### Added
 
-* Access logging can be enabled with `var.enable_access_logging` (this will 
-  also create a new bucket for the access logs). To change the default name of
-  the access bucket(`<bucket-name>-access-log`) use 
-  `var.access_log_bucket_name`. This is off by default.
-* [S3 bucket keys][4] can be enabled (when encryption is set to kms) by
-  configuring `var.bucket_key_enabled`. This is disabled by default.
+* Access logging can now be enabled by passing `"yes"` for the 
+  `enable_access_logging` variable, along with the name of the access log 
+  bucket in `access_log_bucket_name` and the object key prefix for log objects 
+  in `access_log_object_key_prefix`. By default, access logging is disabled.
+* When using SSE-KMS encryption for the bucket, by passing `kms_key_arn`, an 
+  [S3 bucket key][4] can be enabled by passing `"yes"` for the 
+  `enable_bucket_key` variable. By default, the bucket key is disabled.
+* Versioning can now be disabled by passing `"no"` for the `enable_versioning`
+  variable. By default, versioning is enabled.
+* MFA delete should now be enabled by passing `"yes"` for the
+  `enable_mfa_delete` variable. By default, MFA delete is disabled.
+* The bucket policy added to the bucket now enforces that the 
+  `"s3:x-amz-server-side-encryption"` header is present as well as set to the 
+  correct SSE algorithm for the bucket. When the `kms_key_arn` variable is
+  provided, such that SSE-KMS is used, the bucket policy additionally enforces
+  that the correct KMS key ARN is passed in the 
+  `"s3:x-amz-server-side-encryption-aws-kms-key-id"` header. If the 
+  `bucket_policy_template` variable is provided, the template should 
+  interpolate the fragments as shown in `policies/bucket-policy.json.tpl`.
+
+### Fixed
+
+* A regression was introduced that meant the `bucket_policy_template` variable 
+  no longer had any effect. This was resolved by re-introducing the
+  `hashicorp/template` provider so that a template provided as a string could
+  be correctly populated. 
+
+### Deprecated
+
+* The `mfa_delete` variable has been superseded by the `enable_mfa_delete`
+  variable.
+* The `deny_unencrypted_object_upload_fragment` interpolation variable 
+  previously available in the `bucket_policy_template` has been superseded by
+  the `deny_encryption_using_incorrect_algorithm_fragment` and
+  `deny_encryption_using_incorrect_key_fragment` interpolation variables.
 
 ## 2.1.0 (Feb 18th, 2022)
 
