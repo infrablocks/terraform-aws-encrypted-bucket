@@ -13,7 +13,9 @@ Built with care by [Atomic](https://go-atomic.io/)
 
 A Terraform module for building an encrypted bucket in AWS S3.
 
-[![CircleCI](https://circleci.com/gh/infrablocks/terraform-aws-encrypted-bucket.svg?style=shield)](https://circleci.com/gh/infrablocks/terraform-aws-encrypted-bucket)
+![Build Status](https://img.shields.io/circleci/build/github/infrablocks/terraform-aws-encrypted-bucket)
+![License](https://img.shields.io/github/license/infrablocks/terraform-aws-encrypted-bucket)
+![Release](https://img.shields.io/github/v/tag/infrablocks/terraform-aws-encrypted-bucket?label=release)
 
 Usage
 -----
