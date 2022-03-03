@@ -3,7 +3,7 @@ Terraform AWS Encrypted Bucket
 
 [![CircleCI](https://circleci.com/gh/infrablocks/terraform-aws-encrypted-bucket.svg?style=svg)](https://circleci.com/gh/infrablocks/terraform-aws-encrypted-bucket)
 
-![Atomic Logo](https://github.com/infrablocks/terraform-aws-encrypted-bucket/raw/main/docs/images/atomic-logo-monochrome.png)
+![Atomic Logo](https://github.com/infrablocks/terraform-aws-encrypted-bucket/raw/main/docs/images/atomic-logo-monochrome-2.png)
 
 Built with care by [Atomic](https://go-atomic.io/)
 
