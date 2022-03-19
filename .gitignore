@@ -12,6 +12,8 @@
 vendor/
 build/
 dist/
+.bundle
+.rakeTasks
 
 # OS
 .DS_Store
@@ -21,14 +23,11 @@ run/pids/
 run/logs/
 *.log
 .tmp
-.rakeTasks
 
 # RSpec
 .rspec_status
 
 # Terraform
+.terraform
 *.tfstate
 *.tfstate.backup
-.terraform
-build
-vendor
