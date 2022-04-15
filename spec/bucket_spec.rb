@@ -213,11 +213,11 @@ describe 'Encrypted bucket' do
     end
   end
 
-  context 'when enable_bucket_key is "yes"' do
+  context 'when enable_bucket_key is true' do
     before(:all) do
       provision(
         kms_key_arn: output_for(:prerequisites, 'kms_key_arn'),
-        enable_bucket_key: 'yes')
+        enable_bucket_key: true)
     end
 
     it 'has bucket key enabled' do
@@ -225,11 +225,11 @@ describe 'Encrypted bucket' do
     end
   end
 
-  context 'when enable_bucket_key is "no"' do
+  context 'when enable_bucket_key is false' do
     before(:all) do
       provision(
         kms_key_arn: output_for(:prerequisites, 'kms_key_arn'),
-        enable_bucket_key: 'no')
+        enable_bucket_key: false)
     end
 
     it 'has bucket key disabled' do
@@ -237,17 +237,17 @@ describe 'Encrypted bucket' do
     end
   end
 
-  context 'when enable_versioning is "no"' do
+  context 'when enable_versioning is false' do
     before(:all) do
-      provision(enable_versioning: 'no')
+      provision(enable_versioning: false)
     end
 
     it { should_not have_versioning_enabled }
   end
 
-  context 'when enable_versioning is "yes"' do
+  context 'when enable_versioning is true' do
     before(:all) do
-      provision(enable_versioning: 'yes')
+      provision(enable_versioning: true)
     end
 
     it { should have_versioning_enabled }
@@ -323,10 +323,10 @@ describe 'Encrypted bucket' do
     end
   end
 
-  context 'when enable_mfa_delete is "yes"' do
+  context 'when enable_mfa_delete is true' do
     let(:plan_output) do
       capture_stdout do
-        plan(enable_mfa_delete: 'yes')
+        plan(enable_mfa_delete: true)
       end
     end
 
@@ -335,9 +335,9 @@ describe 'Encrypted bucket' do
     it { is_expected.to include('mfa_delete = false -> true') }
   end
 
-  context 'when allow_destroy_when_objects_present is "yes"' do
+  context 'when allow_destroy_when_objects_present is true' do
     before(:all) do
-      provision(allow_destroy_when_objects_present: 'yes')
+      provision(allow_destroy_when_objects_present: true)
     end
 
     it 'destroys the bucket even if it contains an object' do
@@ -362,9 +362,9 @@ describe 'Encrypted bucket' do
     end
   end
 
-  context 'when allow_destroy_when_objects_present is "no"' do
+  context 'when allow_destroy_when_objects_present is false' do
     before(:all) do
-      provision(allow_destroy_when_objects_present: 'no')
+      provision(allow_destroy_when_objects_present: false)
     end
 
     it 'does not destroy the bucket if it contains an object' do
@@ -392,10 +392,10 @@ describe 'Encrypted bucket' do
     end
   end
 
-  context 'when enable_access_logging is "yes"' do
+  context 'when enable_access_logging is true' do
     before(:all) do
       provision(
-        enable_access_logging: 'yes',
+        enable_access_logging: true,
         access_log_bucket_name:
           output_for(:prerequisites, 'access_log_bucket_name'),
         access_log_object_key_prefix: 'logs/')
@@ -410,9 +410,9 @@ describe 'Encrypted bucket' do
     end
   end
 
-  context 'when enable_access_logging is "no"' do
+  context 'when enable_access_logging is false' do
     before(:all) do
-      provision(enable_access_logging: 'no')
+      provision(enable_access_logging: false)
     end
 
     it { should_not(have_logging_enabled) }
