@@ -1,5 +1,30 @@
 ## Unreleased
 
+### Added
+
+* The `include_deny_unencrypted_inflight_operations_statement` variable, 
+  defaulting to `true`, has been added allowing the corresponding statement to
+  be excluded from the resulting bucket policy if required.
+* The `include_deny_encryption_using_incorrect_algorithm_statement` variable,
+  defaulting to `true`, has been added allowing the corresponding statement to
+  be excluded from the resulting bucket policy if required.
+* The `include_deny_encryption_using_incorrect_key_statement` variable, which
+  only applies when using SSE-KMS encryption, defaulting to `true`, has been 
+  added allowing the corresponding statement to be excluded from the resulting
+  bucket policy if required.
+
+### Changed
+
+* All variables that previously accepted `"yes"` or `"no"` have now been
+  converted to type `bool` accepting `true` or `false`.
+
+### Removed
+
+* The deprecated variable `mfa_delete` has now been removed and 
+  `enable_mfa_delete` should be used instead.
+* The deprecated variable `bucket_policy_template` has now been removed in
+  favour of the newly added `include_*_statement` variables.
+
 ## 2.2.0 (Mar 3rd, 2022)
 
 ### Added

@@ -5,12 +5,6 @@ locals {
   sse_algorithm     = var.kms_key_arn == "" ? local.sse_s3_algorithm : local.sse_kms_algorithm
   kms_master_key_id = var.kms_key_arn == "" ? null : var.kms_key_arn
 
-  enable_versioning                  = var.enable_versioning == "yes"
-  enable_mfa_delete                  = var.enable_mfa_delete == "" ? var.mfa_delete == "true" : var.enable_mfa_delete == "yes"
-  enable_access_logging              = var.enable_access_logging == "yes"
-  enable_bucket_key                 = var.enable_bucket_key == "yes"
-  allow_destroy_when_objects_present = var.allow_destroy_when_objects_present == "yes"
-
   deny_encryption_using_incorrect_algorithm_fragment = templatefile(
     "${path.module}/policy-fragments/deny-encryption-using-incorrect-algorithm.json.tpl",
     {
@@ -19,13 +13,13 @@ locals {
     }
   )
 
-  deny_encryption_using_incorrect_key_fragment = templatefile(
+  deny_encryption_using_incorrect_key_fragment = (local.sse_algorithm == local.sse_kms_algorithm) ? templatefile(
     "${path.module}/policy-fragments/deny-encryption-using-incorrect-key.json.tpl",
     {
       bucket_name = var.bucket_name
       kms_key_arn = var.kms_key_arn
     }
-  )
+  ) : ""
 
   deny_unencrypted_inflight_operations_fragment = templatefile(
     "${path.module}/policy-fragments/deny-unencrypted-inflight-operations.json.tpl",
@@ -33,19 +27,15 @@ locals {
       bucket_name = var.bucket_name
     }
   )
-}
 
-data "template_file" "encrypted_bucket_policy" {
-  template = coalesce(var.bucket_policy_template, file("${path.module}/policies/bucket-policy.json.tpl"))
-
-  vars = {
-    bucket_name                                        = var.bucket_name
-    deny_encryption_using_incorrect_algorithm_fragment = local.deny_encryption_using_incorrect_algorithm_fragment
-    deny_encryption_using_incorrect_key_fragment       = local.sse_algorithm == local.sse_kms_algorithm ? local.deny_encryption_using_incorrect_key_fragment : ""
-    deny_unencrypted_inflight_operations_fragment      = local.deny_unencrypted_inflight_operations_fragment
-    # required for backwards compatibility
-    deny_unencrypted_object_upload_fragment            = local.deny_encryption_using_incorrect_algorithm_fragment
-  }
+  bucket_policy = templatefile(
+    "${path.module}/policies/bucket-policy.json.tpl",
+    {
+      bucket_name                                        = var.bucket_name
+      deny_encryption_using_incorrect_algorithm_fragment = local.deny_encryption_using_incorrect_algorithm_fragment
+      deny_encryption_using_incorrect_key_fragment       = local.deny_encryption_using_incorrect_key_fragment
+      deny_unencrypted_inflight_operations_fragment      = local.deny_unencrypted_inflight_operations_fragment
+    })
 }
 
 resource "aws_s3_bucket" "encrypted_bucket" {
@@ -53,7 +43,7 @@ resource "aws_s3_bucket" "encrypted_bucket" {
 
   acl = var.acl
 
-  force_destroy = local.allow_destroy_when_objects_present
+  force_destroy = var.allow_destroy_when_objects_present
 
   server_side_encryption_configuration {
     rule {
@@ -61,12 +51,12 @@ resource "aws_s3_bucket" "encrypted_bucket" {
         kms_master_key_id = local.kms_master_key_id
         sse_algorithm     = local.sse_algorithm
       }
-      bucket_key_enabled = local.enable_bucket_key
+      bucket_key_enabled = var.enable_bucket_key
     }
   }
 
   dynamic logging {
-    for_each = local.enable_access_logging ? toset(["logging"]) : toset([])
+    for_each = var.enable_access_logging ? toset(["logging"]) : toset([])
     content {
       target_bucket = var.access_log_bucket_name
       target_prefix = var.access_log_object_key_prefix
@@ -74,8 +64,8 @@ resource "aws_s3_bucket" "encrypted_bucket" {
   }
 
   versioning {
-    enabled    = local.enable_versioning
-    mfa_delete = local.enable_mfa_delete
+    enabled    = var.enable_versioning
+    mfa_delete = var.enable_mfa_delete
   }
 
   tags = merge({
@@ -85,7 +75,7 @@ resource "aws_s3_bucket" "encrypted_bucket" {
 
 data "aws_iam_policy_document" "encrypted_bucket_policy_document" {
   source_json   = var.source_policy_json
-  override_json = data.template_file.encrypted_bucket_policy.rendered
+  override_json = local.bucket_policy
 }
 
 resource "aws_s3_bucket_policy" "encrypted_bucket" {

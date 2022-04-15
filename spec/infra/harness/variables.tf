@@ -2,7 +2,6 @@ variable "region" {}
 
 variable "bucket_name" {}
 
-variable "bucket_policy_template" {}
 variable "source_policy_json" {}
 
 variable "acl" {}
@@ -31,7 +30,6 @@ variable "public_access_block" {
   }
 }
 
-variable "mfa_delete" {}
 variable "enable_mfa_delete" {}
 variable "enable_versioning" {}
 variable "enable_access_logging" {}

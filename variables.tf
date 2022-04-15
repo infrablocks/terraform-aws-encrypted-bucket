@@ -3,11 +3,6 @@ variable "bucket_name" {
   type = string
 }
 
-variable "bucket_policy_template" {
-  description = "A template for the policy to apply to the bucket. Deprecated - use source_policy_json instead."
-  type = string
-  default = ""
-}
 variable "source_policy_json" {
   description = "A source policy for the bucket, additional statements to enable encryption will be added to the policy."
   type = string
@@ -60,38 +55,32 @@ variable "public_access_block" {
   }
 }
 
-variable "mfa_delete" {
-  description = "Whether or not to enable MFA delete on the bucket (\"true\" or \"false\"). Defaults to \"false\". Deprecated - use enable_mfa_delete instead."
-  type = string
-  default = "false"
-}
-
 variable "enable_mfa_delete" {
-  description = "Whether or not to enable MFA delete on the bucket (\"yes\" or \"no\"). Defaults to \"no\"."
-  type = string
-  default = ""
+  description = "Whether or not to enable MFA delete on the bucket. Defaults to `false`."
+  type = bool
+  default = false
 }
 
 variable "enable_versioning" {
-  description = "Whether or not to enable versioning on the bucket (\"yes\" or \"no\"). Defaults to \"yes\"."
-  type = string
-  default = "yes"
+  description = "Whether or not to enable versioning on the bucket. Defaults to `true`."
+  type = bool
+  default = true
 }
 
 variable "enable_access_logging" {
-  description = "Whether or not to enable access logging on the bucket (\"yes\" or \"no\"). Defaults to \"no\"."
-  type = string
-  default = "no"
+  description = "Whether or not to enable access logging on the bucket. Defaults to `false`."
+  type = bool
+  default = false
 }
 
 variable "enable_bucket_key" {
-  description = "Whether or not to use an Amazon S3 Bucket Key for SSE-KMS. (\"yes\" or \"no\"). Defaults to \"no\"."
-  type = string
-  default = "no"
+  description = "Whether or not to use an Amazon S3 Bucket Key for SSE-KMS. Defaults to `false`."
+  type = bool
+  default = false
 }
 
 variable "allow_destroy_when_objects_present" {
-  description = "Whether or not to allow the bucket to be destroyed if it still contains objects (\"yes\" or \"no\"). Defaults to \"no\"."
-  type = string
-  default = "no"
+  description = "Whether or not to allow the bucket to be destroyed if it still contains objects. Defaults to `false`."
+  type = bool
+  default = false
 }

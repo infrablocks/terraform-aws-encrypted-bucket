@@ -6,7 +6,6 @@ component: 'test'
 work_directory: 'build'
 configuration_directory: "%{hiera('work_directory')}/%{hiera('source_directory')}"
 
-bucket_policy_template: ""
 source_policy_json: ""
 
 acl: "private"
@@ -18,15 +17,14 @@ kms_key_arn: ""
 access_log_bucket_arn: ""
 access_log_object_key_prefix: ""
 
-mfa_delete: ""
-enable_mfa_delete: "no"
-enable_versioning: "yes"
-enable_access_logging: "no"
-enable_bucket_key: "no"
-allow_destroy_when_objects_present: "no"
+enable_mfa_delete: false
+enable_versioning: true
+enable_access_logging: false
+enable_bucket_key: false
+allow_destroy_when_objects_present: false
 
 public_access_block:
-  block_public_acls: "false"
-  block_public_policy: "false"
-  ignore_public_acls: "false"
-  restrict_public_buckets: "false"
+  block_public_acls: false
+  block_public_policy: false
+  ignore_public_acls: false
+  restrict_public_buckets: false

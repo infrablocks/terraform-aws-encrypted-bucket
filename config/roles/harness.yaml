@@ -6,7 +6,6 @@ vars:
 
   bucket_name: "infrablocks-encrypted-%{hiera('deployment_identifier')}"
 
-  bucket_policy_template: "%{hiera('bucket_policy_template')}"
   source_policy_json: "%{hiera('source_policy_json')}"
 
   acl: "%{hiera('acl')}"
@@ -18,7 +17,6 @@ vars:
   access_log_bucket_name: "%{hiera('access_log_bucket_name')}"
   access_log_object_key_prefix: "%{hiera('access_log_object_key_prefix')}"
 
-  mfa_delete: "%{hiera('mfa_delete')}"
   enable_mfa_delete: "%{hiera('enable_mfa_delete')}"
   enable_versioning: "%{hiera('enable_versioning')}"
   enable_access_logging: "%{hiera('enable_access_logging')}"

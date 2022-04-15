@@ -4,7 +4,6 @@ module "encrypted_bucket" {
 
   bucket_name = var.bucket_name
 
-  bucket_policy_template = var.bucket_policy_template
   source_policy_json = var.source_policy_json
 
   acl = var.acl
@@ -18,7 +17,6 @@ module "encrypted_bucket" {
 
   public_access_block = var.public_access_block
 
-  mfa_delete = var.mfa_delete
   enable_mfa_delete = var.enable_mfa_delete
   enable_versioning = var.enable_versioning
   enable_access_logging = var.enable_access_logging

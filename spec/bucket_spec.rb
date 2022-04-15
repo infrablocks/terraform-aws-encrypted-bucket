@@ -178,46 +178,6 @@ describe 'Encrypted bucket' do
     end
   end
 
-  context 'when bucket_policy_template provided' do
-    before(:all) do
-      provision(bucket_policy_template:
-                  File.read('spec/test-bucket-policy.json.tpl'))
-    end
-
-    it 'includes statement fragments specified in template' do
-      expect(bucket_policy)
-        .to(have_statement(
-              'DenyUnEncryptedInflightOperations',
-              deny_un_encrypted_inflight_operations_statement(
-                bucket_name)))
-    end
-
-    it 'does not include statement fragments not specified in template' do
-      expect(bucket_policy)
-        .not_to(have_statement('DenyEncryptionUsingIncorrectAlgorithm'))
-      expect(bucket_policy)
-        .not_to(have_statement('DenyEncryptionUsingIncorrectKey'))
-    end
-
-    it 'includes the  contents of the bucket policy template' do
-      expect(bucket_policy)
-        .to(have_statement(
-              'TestPolicy',
-              {
-                effect: 'Deny',
-                principal: '*',
-                action: 's3:*',
-                resource: "arn:aws:s3:::#{bucket_name}/*",
-                condition: {
-                  'IpAddress' => {
-                    'aws:SourceIp' => '8.8.8.8/32'
-                  }
-                }
-              }
-            ))
-    end
-  end
-
   context 'when kms_key_arn provided' do
     before(:all) do
       provision(
@@ -363,24 +323,10 @@ describe 'Encrypted bucket' do
     end
   end
 
-  context 'when mfa_delete is "true"' do
-    let(:plan_output) do
-      capture_stdout do
-        plan(mfa_delete: 'true',
-             enable_mfa_delete: '')
-      end
-    end
-
-    subject { plan_output }
-
-    it { is_expected.to include('mfa_delete = false -> true') }
-  end
-
   context 'when enable_mfa_delete is "yes"' do
     let(:plan_output) do
       capture_stdout do
-        plan(enable_mfa_delete: 'yes',
-             mfa_delete: '')
+        plan(enable_mfa_delete: 'yes')
       end
     end
 
