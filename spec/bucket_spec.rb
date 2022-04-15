@@ -353,7 +353,7 @@ describe 'Encrypted bucket' do
 
     subject { plan_output }
 
-    it { is_expected.to include('mfa_delete = false -> true') }
+    it { is_expected.to include('mfa_delete = "Disabled" -> "Enabled"') }
   end
 
   context 'when allow_destroy_when_objects_present is true' do
