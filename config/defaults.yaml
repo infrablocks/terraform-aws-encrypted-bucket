@@ -17,11 +17,11 @@ kms_key_arn: ""
 access_log_bucket_arn: ""
 access_log_object_key_prefix: ""
 
-enable_mfa_delete: false
-enable_versioning: true
-enable_access_logging: false
-enable_bucket_key: false
-allow_destroy_when_objects_present: false
+enable_mfa_delete: 'false'
+enable_versioning: 'true'
+enable_access_logging: 'false'
+enable_bucket_key: 'false'
+allow_destroy_when_objects_present: 'false'
 
 public_access_block:
   block_public_acls: false

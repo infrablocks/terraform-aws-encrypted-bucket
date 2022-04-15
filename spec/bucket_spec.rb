@@ -77,7 +77,9 @@ describe 'Encrypted bucket' do
               'DenyEncryptionUsingIncorrectAlgorithm',
               deny_encryption_using_incorrect_algorithm_statement(
                 bucket_name,
-                'AES256')))
+                'AES256'
+              )
+            ))
     end
 
     it 'denies unencrypted in flight operations' do
@@ -85,7 +87,9 @@ describe 'Encrypted bucket' do
         .to(have_statement(
               'DenyUnEncryptedInflightOperations',
               deny_un_encrypted_inflight_operations_statement(
-                bucket_name)))
+                bucket_name
+              )
+            ))
     end
 
     it 'does not include a statement regarding usage of an incorrect key' do
@@ -123,11 +127,11 @@ describe 'Encrypted bucket' do
 
   context 'when tags provided' do
     before(:all) do
-      provision(tags: { "SomeTag" => "some-value" })
+      provision(tags: { 'SomeTag' => 'some-value' })
     end
 
     it { should have_tag('Name').value(bucket_name) }
-    it { should have_tag('SomeTag').value("some-value") }
+    it { should have_tag('SomeTag').value('some-value') }
   end
 
   context 'when source_policy_json provided' do
@@ -143,7 +147,9 @@ describe 'Encrypted bucket' do
               'DenyEncryptionUsingIncorrectAlgorithm',
               deny_encryption_using_incorrect_algorithm_statement(
                 bucket_name,
-                'AES256')))
+                'AES256'
+              )
+            ))
     end
 
     it 'denies unencrypted in flight operations' do
@@ -151,7 +157,9 @@ describe 'Encrypted bucket' do
         .to(have_statement(
               'DenyUnEncryptedInflightOperations',
               deny_un_encrypted_inflight_operations_statement(
-                bucket_name)))
+                bucket_name
+              )
+            ))
     end
 
     it 'does not include a statement regarding usage of an incorrect key' do
@@ -181,7 +189,8 @@ describe 'Encrypted bucket' do
   context 'when kms_key_arn provided' do
     before(:all) do
       provision(
-        kms_key_arn: output_for(:prerequisites, 'kms_key_arn'))
+        kms_key_arn: output_for(:prerequisites, 'kms_key_arn')
+      )
     end
 
     it { should have_server_side_encryption(algorithm: 'aws:kms') }
@@ -192,7 +201,9 @@ describe 'Encrypted bucket' do
               'DenyEncryptionUsingIncorrectAlgorithm',
               deny_encryption_using_incorrect_algorithm_statement(
                 bucket_name,
-                'aws:kms')))
+                'aws:kms'
+              )
+            ))
     end
 
     it 'denies encryption using the incorrect key' do
@@ -201,7 +212,9 @@ describe 'Encrypted bucket' do
               'DenyEncryptionUsingIncorrectKey',
               deny_encryption_using_incorrect_key_statement(
                 bucket_name,
-                output_for(:prerequisites, 'kms_key_arn'))))
+                output_for(:prerequisites, 'kms_key_arn')
+              )
+            ))
     end
 
     it 'denies unencrypted in flight operations' do
@@ -209,7 +222,9 @@ describe 'Encrypted bucket' do
         .to(have_statement(
               'DenyUnEncryptedInflightOperations',
               deny_un_encrypted_inflight_operations_statement(
-                bucket_name)))
+                bucket_name
+              )
+            ))
     end
   end
 
@@ -217,7 +232,8 @@ describe 'Encrypted bucket' do
     before(:all) do
       provision(
         kms_key_arn: output_for(:prerequisites, 'kms_key_arn'),
-        enable_bucket_key: true)
+        enable_bucket_key: 'true'
+      )
     end
 
     it 'has bucket key enabled' do
@@ -229,7 +245,8 @@ describe 'Encrypted bucket' do
     before(:all) do
       provision(
         kms_key_arn: output_for(:prerequisites, 'kms_key_arn'),
-        enable_bucket_key: false)
+        enable_bucket_key: 'false'
+      )
     end
 
     it 'has bucket key disabled' do
@@ -239,7 +256,7 @@ describe 'Encrypted bucket' do
 
   context 'when enable_versioning is false' do
     before(:all) do
-      provision(enable_versioning: false)
+      provision(enable_versioning: 'false')
     end
 
     it { should_not have_versioning_enabled }
@@ -247,7 +264,7 @@ describe 'Encrypted bucket' do
 
   context 'when enable_versioning is true' do
     before(:all) do
-      provision(enable_versioning: true)
+      provision(enable_versioning: 'true')
     end
 
     it { should have_versioning_enabled }
@@ -262,7 +279,8 @@ describe 'Encrypted bucket' do
             block_public_policy: false,
             ignore_public_acls: false,
             restrict_public_buckets: false
-          })
+          }
+        )
       end
 
       it 'sets block_public_acls to true in public access block settings' do
@@ -279,7 +297,8 @@ describe 'Encrypted bucket' do
             block_public_policy: true,
             ignore_public_acls: false,
             restrict_public_buckets: false
-          })
+          }
+        )
       end
 
       it 'sets block_public_policy to true in public access block settings' do
@@ -296,7 +315,8 @@ describe 'Encrypted bucket' do
             block_public_policy: false,
             ignore_public_acls: true,
             restrict_public_buckets: false
-          })
+          }
+        )
       end
 
       it 'sets ignore_public_acls to true in public access block settings' do
@@ -313,7 +333,8 @@ describe 'Encrypted bucket' do
             block_public_policy: false,
             ignore_public_acls: false,
             restrict_public_buckets: true
-          })
+          }
+        )
       end
 
       it 'sets restrict_public_buckets to true in public access block settings' do
@@ -326,7 +347,7 @@ describe 'Encrypted bucket' do
   context 'when enable_mfa_delete is true' do
     let(:plan_output) do
       capture_stdout do
-        plan(enable_mfa_delete: true)
+        plan(enable_mfa_delete: 'true')
       end
     end
 
@@ -337,7 +358,7 @@ describe 'Encrypted bucket' do
 
   context 'when allow_destroy_when_objects_present is true' do
     before(:all) do
-      provision(allow_destroy_when_objects_present: true)
+      provision(allow_destroy_when_objects_present: 'true')
     end
 
     it 'destroys the bucket even if it contains an object' do
@@ -364,7 +385,7 @@ describe 'Encrypted bucket' do
 
   context 'when allow_destroy_when_objects_present is false' do
     before(:all) do
-      provision(allow_destroy_when_objects_present: false)
+      provision(allow_destroy_when_objects_present: 'false')
     end
 
     it 'does not destroy the bucket if it contains an object' do
@@ -395,10 +416,11 @@ describe 'Encrypted bucket' do
   context 'when enable_access_logging is true' do
     before(:all) do
       provision(
-        enable_access_logging: true,
+        enable_access_logging: 'true',
         access_log_bucket_name:
           output_for(:prerequisites, 'access_log_bucket_name'),
-        access_log_object_key_prefix: 'logs/')
+        access_log_object_key_prefix: 'logs/'
+      )
     end
 
     it do
@@ -406,13 +428,15 @@ describe 'Encrypted bucket' do
         have_logging_enabled(
           target_bucket:
             output_for(:prerequisites, 'access_log_bucket_name'),
-          target_prefix: 'logs/'))
+          target_prefix: 'logs/'
+        )
+      )
     end
   end
 
   context 'when enable_access_logging is false' do
     before(:all) do
-      provision(enable_access_logging: false)
+      provision(enable_access_logging: 'false')
     end
 
     it { should_not(have_logging_enabled) }
@@ -420,7 +444,8 @@ describe 'Encrypted bucket' do
 
   def deny_encryption_using_incorrect_algorithm_statement(
     bucket_name,
-    algorithm)
+    algorithm
+  )
     {
       effect: 'Deny',
       principal: '*',
@@ -439,22 +464,24 @@ describe 'Encrypted bucket' do
 
   def deny_encryption_using_incorrect_key_statement(
     bucket_name,
-    kms_key_arn)
+    kms_key_arn
+  )
     {
       effect: 'Deny',
       principal: '*',
       action: 's3:PutObject',
       resource: "arn:aws:s3:::#{bucket_name}/*",
       condition: {
-        "StringNotEqualsIfExists" => {
-          "s3:x-amz-server-side-encryption-aws-kms-key-id" => kms_key_arn
+        'StringNotEqualsIfExists' => {
+          's3:x-amz-server-side-encryption-aws-kms-key-id' => kms_key_arn
         }
       }
     }
   end
 
   def deny_un_encrypted_inflight_operations_statement(
-    bucket_name)
+    bucket_name
+  )
     {
       effect: 'Deny',
       principal: '*',
