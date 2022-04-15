@@ -41,46 +41,52 @@ locals {
 resource "aws_s3_bucket" "encrypted_bucket" {
   bucket = var.bucket_name
 
-  acl = var.acl
-
   force_destroy = var.allow_destroy_when_objects_present
-
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        kms_master_key_id = local.kms_master_key_id
-        sse_algorithm     = local.sse_algorithm
-      }
-      bucket_key_enabled = var.enable_bucket_key
-    }
-  }
-
-  dynamic logging {
-    for_each = var.enable_access_logging ? toset(["logging"]) : toset([])
-    content {
-      target_bucket = var.access_log_bucket_name
-      target_prefix = var.access_log_object_key_prefix
-    }
-  }
-
-  versioning {
-    enabled    = var.enable_versioning
-    mfa_delete = var.enable_mfa_delete
-  }
 
   tags = merge({
     Name = var.bucket_name
   }, var.tags)
 }
 
-data "aws_iam_policy_document" "encrypted_bucket_policy_document" {
-  source_json   = var.source_policy_json
-  override_json = local.bucket_policy
+resource "aws_s3_bucket_acl" "encrypted_bucket" {
+  bucket = aws_s3_bucket.encrypted_bucket.id
+  acl    = var.acl
 }
 
-resource "aws_s3_bucket_policy" "encrypted_bucket" {
+resource "aws_s3_bucket_logging" "encrypted_bucket" {
+  count = var.enable_access_logging ? 1 : 0
+
   bucket = aws_s3_bucket.encrypted_bucket.id
-  policy = data.aws_iam_policy_document.encrypted_bucket_policy_document.json
+
+  target_bucket = var.access_log_bucket_name
+  target_prefix = var.access_log_object_key_prefix
+}
+
+resource "aws_s3_bucket_versioning" "encrypted_bucket" {
+  count = (
+    var.enable_versioning
+      || var.enable_mfa_delete
+    ? 1 : 0
+  )
+
+  bucket = aws_s3_bucket.encrypted_bucket.id
+
+  versioning_configuration {
+    status = var.enable_versioning ? "Enabled" : "Disabled"
+    mfa_delete = var.enable_mfa_delete ? "Enabled" : "Disabled"
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "encrypted_bucket" {
+  bucket = aws_s3_bucket.encrypted_bucket.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      kms_master_key_id = local.kms_master_key_id
+      sse_algorithm     = local.sse_algorithm
+    }
+    bucket_key_enabled = var.enable_bucket_key
+  }
 }
 
 resource "aws_s3_bucket_public_access_block" "public_access_block" {
@@ -98,4 +104,14 @@ resource "aws_s3_bucket_public_access_block" "public_access_block" {
   block_public_policy     = var.public_access_block.block_public_policy
   ignore_public_acls      = var.public_access_block.ignore_public_acls
   restrict_public_buckets = var.public_access_block.restrict_public_buckets
+}
+
+data "aws_iam_policy_document" "encrypted_bucket_policy_document" {
+  source_json   = var.source_policy_json
+  override_json = local.bucket_policy
+}
+
+resource "aws_s3_bucket_policy" "encrypted_bucket" {
+  bucket = aws_s3_bucket.encrypted_bucket.id
+  policy = data.aws_iam_policy_document.encrypted_bucket_policy_document.json
 }
