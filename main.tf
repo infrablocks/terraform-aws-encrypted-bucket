@@ -107,8 +107,8 @@ resource "aws_s3_bucket_public_access_block" "public_access_block" {
 }
 
 data "aws_iam_policy_document" "encrypted_bucket_policy_document" {
-  source_json   = var.source_policy_json
-  override_json = local.bucket_policy
+  source_policy_documents = var.source_policy_json == "" ? [] : [var.source_policy_json]
+  override_policy_documents = [local.bucket_policy]
 }
 
 resource "aws_s3_bucket_policy" "encrypted_bucket" {
