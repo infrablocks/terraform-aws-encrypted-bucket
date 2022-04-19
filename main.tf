@@ -4,38 +4,78 @@ locals {
 
   sse_algorithm     = var.kms_key_arn == "" ? local.sse_s3_algorithm : local.sse_kms_algorithm
   kms_master_key_id = var.kms_key_arn == "" ? null : var.kms_key_arn
+}
 
-  deny_encryption_using_incorrect_algorithm_fragment = templatefile(
-    "${path.module}/policy-fragments/deny-encryption-using-incorrect-algorithm.json.tpl",
-    {
-      bucket_name   = var.bucket_name
-      sse_algorithm = local.sse_algorithm
+data "aws_iam_policy_document" "deny_un_encrypted_inflight_operations" {
+  count = var.include_deny_unencrypted_inflight_operations_statement ? 1 : 0
+
+  statement {
+    sid = "DenyUnEncryptedInflightOperations"
+    effect = "Deny"
+    resources = ["arn:aws:s3:::${var.bucket_name}/*"]
+    actions = ["s3:*"]
+
+    principals {
+      identifiers = ["*"]
+      type        = "*"
     }
-  )
 
-  deny_encryption_using_incorrect_key_fragment = (local.sse_algorithm == local.sse_kms_algorithm) ? templatefile(
-    "${path.module}/policy-fragments/deny-encryption-using-incorrect-key.json.tpl",
-    {
-      bucket_name = var.bucket_name
-      kms_key_arn = var.kms_key_arn
+    condition {
+      test     = "Bool"
+      values   = ["false"]
+      variable = "aws:SecureTransport"
     }
-  ) : ""
+  }
+}
 
-  deny_unencrypted_inflight_operations_fragment = templatefile(
-    "${path.module}/policy-fragments/deny-unencrypted-inflight-operations.json.tpl",
-    {
-      bucket_name = var.bucket_name
+data "aws_iam_policy_document" "deny_encryption_using_incorrect_algorithm" {
+  count = var.include_deny_encryption_using_incorrect_algorithm_statement ? 1 : 0
+
+  statement {
+    sid = "DenyEncryptionUsingIncorrectAlgorithm"
+    effect = "Deny"
+    resources = ["arn:aws:s3:::${var.bucket_name}/*"]
+    actions = ["s3:PutObject"]
+
+    principals {
+      identifiers = ["*"]
+      type        = "*"
     }
-  )
 
-  bucket_policy = templatefile(
-    "${path.module}/policies/bucket-policy.json.tpl",
-    {
-      bucket_name                                        = var.bucket_name
-      deny_encryption_using_incorrect_algorithm_fragment = local.deny_encryption_using_incorrect_algorithm_fragment
-      deny_encryption_using_incorrect_key_fragment       = local.deny_encryption_using_incorrect_key_fragment
-      deny_unencrypted_inflight_operations_fragment      = local.deny_unencrypted_inflight_operations_fragment
-    })
+    condition {
+      test     = "Null"
+      values   = ["false"]
+      variable = "s3:x-amz-server-side-encryption"
+    }
+
+    condition {
+      test     = "StringNotEquals"
+      values   = [local.sse_algorithm]
+      variable = "s3:x-amz-server-side-encryption"
+    }
+  }
+}
+
+data "aws_iam_policy_document" "deny_encryption_using_incorrect_key" {
+  count = var.include_deny_encryption_using_incorrect_key_statement && local.sse_algorithm == local.sse_kms_algorithm ? 1 : 0
+
+  statement {
+    sid = "DenyEncryptionUsingIncorrectKey"
+    effect = "Deny"
+    resources = ["arn:aws:s3:::${var.bucket_name}/*"]
+    actions = ["s3:PutObject"]
+
+    principals {
+      identifiers = ["*"]
+      type        = "*"
+    }
+
+    condition {
+      test     = "StringNotEqualsIfExists"
+      values   = [local.kms_master_key_id]
+      variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
+    }
+  }
 }
 
 resource "aws_s3_bucket" "encrypted_bucket" {
@@ -72,7 +112,7 @@ resource "aws_s3_bucket_versioning" "encrypted_bucket" {
   bucket = aws_s3_bucket.encrypted_bucket.id
 
   versioning_configuration {
-    status = var.enable_versioning ? "Enabled" : "Disabled"
+    status     = var.enable_versioning ? "Enabled" : "Disabled"
     mfa_delete = var.enable_mfa_delete ? "Enabled" : "Disabled"
   }
 }
@@ -91,11 +131,11 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "encrypted_bucket"
 
 resource "aws_s3_bucket_public_access_block" "public_access_block" {
   count = (
-  var.public_access_block.block_public_acls
-  || var.public_access_block.block_public_policy
-  || var.public_access_block.ignore_public_acls
-  || var.public_access_block.restrict_public_buckets
-  ? 1 : 0
+    var.public_access_block.block_public_acls
+      || var.public_access_block.block_public_policy
+      || var.public_access_block.ignore_public_acls
+      || var.public_access_block.restrict_public_buckets
+    ? 1 : 0
   )
 
   bucket = aws_s3_bucket.encrypted_bucket.id
@@ -107,8 +147,22 @@ resource "aws_s3_bucket_public_access_block" "public_access_block" {
 }
 
 data "aws_iam_policy_document" "encrypted_bucket_policy_document" {
-  source_policy_documents = var.source_policy_json == "" ? [] : [var.source_policy_json]
-  override_policy_documents = [local.bucket_policy]
+  source_policy_documents = compact(
+    [
+      var.include_deny_unencrypted_inflight_operations_statement
+        ? data.aws_iam_policy_document.deny_un_encrypted_inflight_operations[0].json
+        : "",
+      var.include_deny_encryption_using_incorrect_algorithm_statement
+        ? data.aws_iam_policy_document.deny_encryption_using_incorrect_algorithm[0].json
+        : "",
+      var.include_deny_encryption_using_incorrect_key_statement && local.sse_algorithm == local.sse_kms_algorithm
+        ? data.aws_iam_policy_document.deny_encryption_using_incorrect_key[0].json
+        : "",
+      var.source_policy_document != ""
+        ? var.source_policy_document
+        : ""
+    ]
+  )
 }
 
 resource "aws_s3_bucket_policy" "encrypted_bucket" {

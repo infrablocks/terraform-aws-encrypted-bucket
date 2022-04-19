@@ -4,7 +4,7 @@ module "encrypted_bucket" {
 
   bucket_name = var.bucket_name
 
-  source_policy_json = var.source_policy_json
+  source_policy_document = var.source_policy_document
 
   acl = var.acl
 
@@ -16,6 +16,10 @@ module "encrypted_bucket" {
   access_log_object_key_prefix = var.access_log_object_key_prefix
 
   public_access_block = var.public_access_block
+
+  include_deny_unencrypted_inflight_operations_statement = var.include_deny_unencrypted_inflight_operations_statement
+  include_deny_encryption_using_incorrect_algorithm_statement = var.include_deny_encryption_using_incorrect_algorithm_statement
+  include_deny_encryption_using_incorrect_key_statement = var.include_deny_encryption_using_incorrect_key_statement
 
   enable_mfa_delete = var.enable_mfa_delete
   enable_versioning = var.enable_versioning

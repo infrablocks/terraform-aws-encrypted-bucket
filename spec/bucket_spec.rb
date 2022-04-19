@@ -16,13 +16,6 @@ RSpec::Matchers.define :have_statement do |*args|
       statement['Resource'] == expected[:resource] &&
       statement['Condition'] == expected[:condition]
   end
-
-  match_when_negated do |actual|
-    sid = *args
-    statements = actual['Statement']
-    statement = statements.find { |s| s['Sid'] == sid }
-    statement.nil?
-  end
 end
 
 describe 'Encrypted bucket' do
@@ -134,9 +127,9 @@ describe 'Encrypted bucket' do
     it { should have_tag('SomeTag').value('some-value') }
   end
 
-  context 'when source_policy_json provided' do
+  context 'when source_policy_document provided' do
     before(:all) do
-      provision(source_policy_json:
+      provision(source_policy_document:
                   File.read('spec/test-source-policy.json.tpl')
                       .gsub('${bucket_name}', vars.bucket_name))
     end
@@ -182,6 +175,126 @@ describe 'Encrypted bucket' do
                   }
                 }
               }
+            ))
+    end
+  end
+
+  context 'when include_deny_unencrypted_inflight_operations_statement '\
+          'is false' do
+    before(:all) do
+      provision(
+        include_deny_unencrypted_inflight_operations_statement: 'false'
+      )
+    end
+
+    it 'does not deny unencrypted in flight operations' do
+      expect(bucket_policy)
+        .not_to(have_statement(
+                  'DenyUnEncryptedInflightOperations',
+                  deny_un_encrypted_inflight_operations_statement(
+                    bucket_name
+                  )
+                ))
+    end
+  end
+
+  context 'when include_deny_unencrypted_inflight_operations_statement '\
+          'is true' do
+    before(:all) do
+      provision(
+        include_deny_unencrypted_inflight_operations_statement: 'true'
+      )
+    end
+
+    it 'denies unencrypted in flight operations' do
+      expect(bucket_policy)
+        .to(have_statement(
+              'DenyUnEncryptedInflightOperations',
+              deny_un_encrypted_inflight_operations_statement(
+                bucket_name
+              )
+            ))
+    end
+  end
+
+  context 'when include_deny_encryption_using_incorrect_algorithm_statement '\
+          'is false' do
+    before(:all) do
+      provision(
+        include_deny_encryption_using_incorrect_algorithm_statement: 'false'
+      )
+    end
+
+    it 'does not deny encryption using the incorrect algorithm' do
+      expect(bucket_policy)
+        .not_to(have_statement(
+                  'DenyEncryptionUsingIncorrectAlgorithm',
+                  deny_encryption_using_incorrect_algorithm_statement(
+                    bucket_name,
+                    'AES256'
+                  )
+                ))
+    end
+  end
+
+  context 'when include_deny_encryption_using_incorrect_algorithm_statement '\
+          'is true' do
+    before(:all) do
+      provision(
+        include_deny_encryption_using_incorrect_algorithm_statement: 'true'
+      )
+    end
+
+    it 'denies encryption using the incorrect algorithm' do
+      expect(bucket_policy)
+        .to(have_statement(
+              'DenyEncryptionUsingIncorrectAlgorithm',
+              deny_encryption_using_incorrect_algorithm_statement(
+                bucket_name,
+                'AES256'
+              )
+            ))
+    end
+  end
+
+  context 'when include_deny_encryption_using_incorrect_key_statement '\
+          'is false' do
+    before(:all) do
+      provision(
+        kms_key_arn: output_for(:prerequisites, 'kms_key_arn'),
+        include_deny_encryption_using_incorrect_key_statement: 'false'
+      )
+    end
+
+    it 'does not deny encryption using incorrect key' do
+      expect(bucket_policy)
+        .not_to(have_statement(
+                  'DenyEncryptionUsingIncorrectKey',
+                  deny_encryption_using_incorrect_key_statement(
+                    bucket_name,
+                    output_for(:prerequisites, 'kms_key_arn')
+                  )
+                ))
+    end
+  end
+
+  context 'when include_deny_encryption_using_incorrect_key_statement '\
+          'is true' do
+    before(:all) do
+      provision(
+        kms_key_arn: output_for(:prerequisites, 'kms_key_arn'),
+        include_deny_encryption_using_incorrect_key_statement: 'true'
+      )
+    end
+
+    it 'denies encryption using incorrect key' do
+      expect(bucket_policy)
+        .to(have_statement(
+              'DenyEncryptionUsingIncorrectKey',
+              deny_encryption_using_incorrect_key_statement(
+                bucket_name,
+                output_for(:prerequisites, 'kms_key_arn')
+              )
             ))
     end
   end

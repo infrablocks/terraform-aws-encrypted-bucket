@@ -2,7 +2,7 @@ variable "region" {}
 
 variable "bucket_name" {}
 
-variable "source_policy_json" {}
+variable "source_policy_document" {}
 
 variable "acl" {}
 
@@ -30,8 +30,28 @@ variable "public_access_block" {
   }
 }
 
-variable "enable_mfa_delete" {}
-variable "enable_versioning" {}
-variable "enable_access_logging" {}
-variable "enable_bucket_key" {}
-variable "allow_destroy_when_objects_present" {}
+variable "include_deny_unencrypted_inflight_operations_statement" {
+  type = bool
+}
+variable "include_deny_encryption_using_incorrect_algorithm_statement" {
+  type = bool
+}
+variable "include_deny_encryption_using_incorrect_key_statement" {
+  type = bool
+}
+
+variable "enable_mfa_delete" {
+  type = bool
+}
+variable "enable_versioning" {
+  type = bool
+}
+variable "enable_access_logging" {
+  type = bool
+}
+variable "enable_bucket_key" {
+  type = bool
+}
+variable "allow_destroy_when_objects_present" {
+  type = bool
+}

@@ -3,7 +3,7 @@ variable "bucket_name" {
   type = string
 }
 
-variable "source_policy_json" {
+variable "source_policy_document" {
   description = "A source policy for the bucket, additional statements to enable encryption will be added to the policy."
   type = string
   default = ""
@@ -53,6 +53,22 @@ variable "public_access_block" {
     ignore_public_acls = false
     restrict_public_buckets = false
   }
+}
+
+variable "include_deny_unencrypted_inflight_operations_statement" {
+  description = "Whether or not to include a bucket policy statement to deny unencrypted inflight operations. Defaults to `true`."
+  type = bool
+  default = true
+}
+variable "include_deny_encryption_using_incorrect_algorithm_statement" {
+  description = "Whether or not to include a bucket policy statement to deny encryption using the incorrect algorithm. Defaults to `true`."
+  type = bool
+  default = true
+}
+variable "include_deny_encryption_using_incorrect_key_statement" {
+  description = "Whether or not to include a bucket policy statement to deny encryption using the incorrect key. Defaults to `true`."
+  type = bool
+  default = true
 }
 
 variable "enable_mfa_delete" {

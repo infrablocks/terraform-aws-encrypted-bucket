@@ -6,7 +6,7 @@ component: 'test'
 work_directory: 'build'
 configuration_directory: "%{hiera('work_directory')}/%{hiera('source_directory')}"
 
-source_policy_json: ""
+source_policy_document: ""
 
 acl: "private"
 
@@ -16,6 +16,10 @@ kms_key_arn: ""
 
 access_log_bucket_arn: ""
 access_log_object_key_prefix: ""
+
+include_deny_unencrypted_inflight_operations_statement: 'true'
+include_deny_encryption_using_incorrect_algorithm_statement: 'true'
+include_deny_encryption_using_incorrect_key_statement: 'true'
 
 enable_mfa_delete: 'false'
 enable_versioning: 'true'

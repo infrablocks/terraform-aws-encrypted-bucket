@@ -15,6 +15,8 @@
 
 ### Changed
 
+* The minimum supported AWS provider version is now 4.0.
+* The `source_policy_json` variable is now called `source_policy_document`.
 * All variables that previously accepted `"yes"` or `"no"` have now been
   converted to type `bool` accepting `true` or `false`.
 
