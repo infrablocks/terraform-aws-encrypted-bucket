@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 3.0.0 (April 20th, 2022)
+
 ### Added
 
 * The `include_deny_unencrypted_inflight_operations_statement` variable, 
