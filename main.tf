@@ -54,6 +54,8 @@ data "aws_iam_policy_document" "deny_encryption_using_incorrect_algorithm" {
 }
 
 data "aws_iam_policy_document" "deny_encryption_using_incorrect_key" {
+  count = local.kms_master_key_id != null ? 1 : 0
+
   statement {
     sid       = "DenyEncryptionUsingIncorrectKey"
     effect    = "Deny"
@@ -151,7 +153,7 @@ data "aws_iam_policy_document" "encrypted_bucket_policy_document" {
       ? data.aws_iam_policy_document.deny_encryption_using_incorrect_algorithm.json
       : "",
       local.include_deny_encryption_using_incorrect_key_statement && local.sse_algorithm == local.sse_kms_algorithm
-      ? data.aws_iam_policy_document.deny_encryption_using_incorrect_key.json
+      ? data.aws_iam_policy_document.deny_encryption_using_incorrect_key[0].json
       : "",
       local.source_policy_document != ""
       ? local.source_policy_document
