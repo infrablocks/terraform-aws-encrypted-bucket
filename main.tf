@@ -151,7 +151,7 @@ data "aws_iam_policy_document" "encrypted_bucket_policy_document" {
       ? data.aws_iam_policy_document.deny_encryption_using_incorrect_algorithm.json
       : "",
       local.include_deny_encryption_using_incorrect_key_statement && local.sse_algorithm == local.sse_kms_algorithm
-      ? data.aws_iam_policy_document.deny_encryption_using_incorrect_key[0].json
+      ? data.aws_iam_policy_document.deny_encryption_using_incorrect_key.json
       : "",
       local.source_policy_document != ""
       ? local.source_policy_document
