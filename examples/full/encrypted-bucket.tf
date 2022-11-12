@@ -24,4 +24,8 @@ module "encrypted_bucket" {
 
   enable_bucket_key                  = true
   allow_destroy_when_objects_present = true
+
+  depends_on = [
+    aws_kms_key.encryption_key
+  ]
 }
