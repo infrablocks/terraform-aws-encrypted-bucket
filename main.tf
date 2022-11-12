@@ -54,8 +54,6 @@ data "aws_iam_policy_document" "deny_encryption_using_incorrect_algorithm" {
 }
 
 data "aws_iam_policy_document" "deny_encryption_using_incorrect_key" {
-  count = var.kms_key_arn != "" && var.kms_key_arn != null ? 1 : 0
-
   statement {
     sid       = "DenyEncryptionUsingIncorrectKey"
     effect    = "Deny"
@@ -69,7 +67,7 @@ data "aws_iam_policy_document" "deny_encryption_using_incorrect_key" {
 
     condition {
       test     = "StringNotEqualsIfExists"
-      values   = [local.kms_master_key_id]
+      values   = [coalesce(local.kms_master_key_id, "")]
       variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
     }
   }
