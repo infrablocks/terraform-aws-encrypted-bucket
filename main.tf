@@ -54,7 +54,7 @@ data "aws_iam_policy_document" "deny_encryption_using_incorrect_algorithm" {
 }
 
 data "aws_iam_policy_document" "deny_encryption_using_incorrect_key" {
-  count = local.kms_master_key_id != null ? 1 : 0
+  count = local.kms_key_arn != "" ? 1 : 0
 
   statement {
     sid       = "DenyEncryptionUsingIncorrectKey"
