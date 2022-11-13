@@ -67,7 +67,7 @@ data "aws_iam_policy_document" "deny_encryption_using_incorrect_key" {
 
     condition {
       test     = "StringNotEqualsIfExists"
-      values   = [local.kms_master_key_id || ""]
+      values   = [local.kms_key_arn]
       variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
     }
   }
