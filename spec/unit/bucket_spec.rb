@@ -901,6 +901,41 @@ describe 'encrypted bucket' do
     end
   end
 
+  context 'when object_lock_enabled is false' do
+    before(:context) do
+      @plan = plan(role: :root) do |vars|
+        vars.enable_object_lock = false
+      end
+    end
+
+    it 'does not enable bucket object lock' do
+      expect(@plan)
+        .to(include_resource_creation(type: 'aws_s3_bucket')
+              .with_attribute_value(
+                :object_lock_enabled,
+                false
+              ))
+    end
+  end
+
+  context 'when object_lock_enabled is true' do
+    before(:context) do
+      @plan = plan(role: :root) do |vars|
+        vars.enable_object_lock = true
+      end
+    end
+
+    it 'enables bucket object lock' do
+      expect(@plan)
+        .to(include_resource_creation(type: 'aws_s3_bucket')
+              .with_attribute_value(
+                :object_lock_enabled,
+                true
+              ))
+    end
+  end
+
+
   # rubocop:disable Metrics/MethodLength
   def deny_encryption_using_incorrect_algorithm_statement(
     bucket_name,

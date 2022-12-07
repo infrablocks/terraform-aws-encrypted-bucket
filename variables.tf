@@ -95,8 +95,15 @@ variable "enable_bucket_key" {
   default = false
 }
 
+variable "enable_object_lock" {
+  description = "Whether or not to enable object lock on the bucket. Defaults to `false`."
+  type = bool
+  default = false
+}
+
 variable "allow_destroy_when_objects_present" {
   description = "Whether or not to allow the bucket to be destroyed if it still contains objects. Defaults to `false`."
   type = bool
   default = false
 }
+

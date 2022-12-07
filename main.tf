@@ -77,6 +77,7 @@ resource "aws_s3_bucket" "encrypted_bucket" {
   bucket = var.bucket_name
 
   force_destroy = local.allow_destroy_when_objects_present
+  object_lock_enabled = local.enable_object_lock
 
   tags = merge({
     Name = var.bucket_name
