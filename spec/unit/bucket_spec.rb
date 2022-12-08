@@ -917,7 +917,7 @@ describe 'encrypted bucket' do
               ))
     end
 
-    it 'creates bucket object lock configuration' do
+    it 'does not create bucket object lock configuration' do
       expect(@plan)
         .not_to(include_resource_creation(
                   type: 'aws_s3_bucket_object_lock_configuration'
