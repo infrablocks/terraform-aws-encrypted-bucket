@@ -1032,7 +1032,7 @@ describe 'encrypted bucket' do
         expect(@plan)
           .to(include_resource_creation(
             type: 'aws_s3_bucket_object_lock_configuration'
-              )
+          )
                 .once)
       end
 
@@ -1040,7 +1040,7 @@ describe 'encrypted bucket' do
         expect(@plan)
           .to(include_resource_creation(
             type: 'aws_s3_bucket_object_lock_configuration'
-              )
+          )
                 .with_attribute_value(
                   [:rule, 0,
                    :default_retention, 0,
@@ -1053,7 +1053,7 @@ describe 'encrypted bucket' do
         expect(@plan)
           .to(include_resource_creation(
             type: 'aws_s3_bucket_object_lock_configuration'
-              )
+          )
                 .with_attribute_value(
                   [:rule, 0,
                    :default_retention, 0,
