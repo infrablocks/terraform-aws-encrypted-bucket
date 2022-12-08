@@ -107,3 +107,13 @@ variable "allow_destroy_when_objects_present" {
   default = false
 }
 
+variable "object_lock_configuration" {
+  description = "If provided, will configure object lock configuration rule for the bucket."
+  type        = object({
+    mode  = string
+    days  = number
+    years = number
+  })
+  default = null
+}
+

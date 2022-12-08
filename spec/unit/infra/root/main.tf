@@ -26,4 +26,5 @@ module "encrypted_bucket" {
   enable_bucket_key                  = var.enable_bucket_key
   enable_object_lock                 = var.enable_object_lock
   allow_destroy_when_objects_present = var.allow_destroy_when_objects_present
+  object_lock_configuration          = var.object_lock_configuration
 }
