@@ -76,7 +76,8 @@ data "aws_iam_policy_document" "deny_encryption_using_incorrect_key" {
 resource "aws_s3_bucket" "encrypted_bucket" {
   bucket = var.bucket_name
 
-  force_destroy = local.allow_destroy_when_objects_present
+  force_destroy       = local.allow_destroy_when_objects_present
+  object_lock_enabled = local.enable_object_lock
 
   tags = merge({
     Name = var.bucket_name
@@ -163,4 +164,18 @@ data "aws_iam_policy_document" "encrypted_bucket_policy_document" {
 resource "aws_s3_bucket_policy" "encrypted_bucket" {
   bucket = aws_s3_bucket.encrypted_bucket.id
   policy = data.aws_iam_policy_document.encrypted_bucket_policy_document.json
+}
+
+resource "aws_s3_bucket_object_lock_configuration" "encrypted_bucket" {
+  count = local.enable_object_lock && local.object_lock_configuration != null  ? 1 : 0
+
+  bucket = aws_s3_bucket.encrypted_bucket.bucket
+
+  rule {
+    default_retention {
+      mode  = local.object_lock_configuration.mode
+      days  = try(local.object_lock_configuration.days, null)
+      years = try(local.object_lock_configuration.years, null)
+    }
+  }
 }

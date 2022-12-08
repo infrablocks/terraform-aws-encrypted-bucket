@@ -901,6 +901,169 @@ describe 'encrypted bucket' do
     end
   end
 
+  context 'when object_lock_enabled is false' do
+    before(:context) do
+      @plan = plan(role: :root) do |vars|
+        vars.enable_object_lock = false
+      end
+    end
+
+    it 'does not enable bucket object lock' do
+      expect(@plan)
+        .to(include_resource_creation(type: 'aws_s3_bucket')
+              .with_attribute_value(
+                :object_lock_enabled,
+                false
+              ))
+    end
+
+    it 'does not create bucket object lock configuration' do
+      expect(@plan)
+        .not_to(include_resource_creation(
+                  type: 'aws_s3_bucket_object_lock_configuration'
+                ))
+    end
+  end
+
+  context 'when object_lock_enabled is true' do
+    context 'with object_lock_configuration not set' do
+      before(:context) do
+        @plan = plan(role: :root) do |vars|
+          vars.enable_object_lock = true
+          vars.object_lock_configuration = nil
+        end
+      end
+
+      it 'enables bucket object lock' do
+        expect(@plan)
+          .to(include_resource_creation(type: 'aws_s3_bucket')
+                .with_attribute_value(
+                  :object_lock_enabled,
+                  true
+                ))
+      end
+
+      it 'does not create bucket object lock configuration' do
+        expect(@plan)
+          .not_to(include_resource_creation(
+                    type: 'aws_s3_bucket_object_lock_configuration'
+                  ))
+      end
+    end
+
+    context 'with object_lock_configuration set to retain for days' do
+      before(:context) do
+        @plan = plan(role: :root) do |vars|
+          vars.enable_object_lock = true
+          vars.object_lock_configuration = {
+            mode: 'COMPLIANCE',
+            days: 10,
+            years: nil
+          }
+        end
+      end
+
+      it 'enables bucket object lock' do
+        expect(@plan)
+          .to(include_resource_creation(type: 'aws_s3_bucket')
+                .with_attribute_value(
+                  :object_lock_enabled,
+                  true
+                ))
+      end
+
+      it 'creates bucket object lock configuration' do
+        expect(@plan)
+          .to(include_resource_creation(
+            type: 'aws_s3_bucket_object_lock_configuration'
+          )
+                .once)
+      end
+
+      it 'sets the specified mode in default retention rule' do
+        expect(@plan)
+          .to(include_resource_creation(
+            type: 'aws_s3_bucket_object_lock_configuration'
+          )
+                .with_attribute_value(
+                  [:rule, 0,
+                   :default_retention, 0,
+                   :mode],
+                  'COMPLIANCE'
+                ))
+      end
+
+      it 'sets days to 10 in default retention rule' do
+        expect(@plan)
+          .to(include_resource_creation(
+            type: 'aws_s3_bucket_object_lock_configuration'
+          )
+                .with_attribute_value(
+                  [:rule, 0,
+                   :default_retention, 0,
+                   :days],
+                  10
+                ))
+      end
+    end
+
+    context 'with object_lock_configuration set to retain for years' do
+      before(:context) do
+        @plan = plan(role: :root) do |vars|
+          vars.enable_object_lock = true
+          vars.object_lock_configuration = {
+            mode: 'GOVERNANCE',
+            years: 1,
+            days: nil
+          }
+        end
+      end
+
+      it 'enables bucket object lock' do
+        expect(@plan)
+          .to(include_resource_creation(type: 'aws_s3_bucket')
+                .with_attribute_value(
+                  :object_lock_enabled,
+                  true
+                ))
+      end
+
+      it 'creates bucket object lock configuration' do
+        expect(@plan)
+          .to(include_resource_creation(
+            type: 'aws_s3_bucket_object_lock_configuration'
+              )
+                .once)
+      end
+
+      it 'sets the specified mode in default retention rule' do
+        expect(@plan)
+          .to(include_resource_creation(
+            type: 'aws_s3_bucket_object_lock_configuration'
+              )
+                .with_attribute_value(
+                  [:rule, 0,
+                   :default_retention, 0,
+                   :mode],
+                  'GOVERNANCE'
+                ))
+      end
+
+      it 'sets years to 1 in default retention rule' do
+        expect(@plan)
+          .to(include_resource_creation(
+            type: 'aws_s3_bucket_object_lock_configuration'
+              )
+                .with_attribute_value(
+                  [:rule, 0,
+                   :default_retention, 0,
+                   :years],
+                  1
+                ))
+      end
+    end
+  end
+
   # rubocop:disable Metrics/MethodLength
   def deny_encryption_using_incorrect_algorithm_statement(
     bucket_name,

@@ -65,7 +65,19 @@ variable "enable_bucket_key" {
   type    = bool
   default = null
 }
+variable "enable_object_lock" {
+  type    = bool
+  default = null
+}
 variable "allow_destroy_when_objects_present" {
   type    = bool
+  default = null
+}
+variable "object_lock_configuration" {
+  type = object({
+    mode  = string
+    days  = number
+    years = number
+  })
   default = null
 }
