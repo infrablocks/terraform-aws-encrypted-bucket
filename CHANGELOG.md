@@ -1,9 +1,9 @@
-## Unreleased
+## 3.1.0 (December 19th, 2022)
 
 ### Added 
 
-* Added support for S3 Object Lock through `enable_object_look` and 
-  `object_lock_configuration` variables. 
+* S3 Object Lock support has been added, configured via the `enable_object_lock`
+  and `object_lock_configuration` variables. 
 
 ## 3.0.0 (April 20th, 2022)
 
