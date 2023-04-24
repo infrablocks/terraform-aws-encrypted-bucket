@@ -5,6 +5,8 @@ require 'git'
 require 'rake_circle_ci'
 require 'rake_github'
 require 'rake_gpg'
+require 'rake_git'
+require 'rake_git_crypt'
 require 'rake_ssh'
 require 'rake_terraform'
 require 'rspec/core/rake_task'
@@ -66,18 +68,14 @@ namespace :keys do
     )
   end
 
-  namespace :secrets do
-    namespace :gpg do
-      RakeGPG.define_generate_key_task(
-        output_directory: 'config/secrets/ci',
-        name_prefix: 'gpg',
-        owner_name: 'InfraBlocks Maintainers',
-        owner_email: 'maintainers@infrablocks.io',
-        owner_comment: 'terraform-aws-encrypted-bucket CI Key'
-      )
-    end
-
-    task generate: ['gpg:generate']
+  namespace :gpg do
+    RakeGPG.define_generate_key_task(
+      output_directory: 'config/secrets/ci',
+      name_prefix: 'gpg',
+      owner_name: 'InfraBlocks Maintainers',
+      owner_email: 'maintainers@infrablocks.io',
+      owner_comment: 'terraform-aws-encrypted-bucket CI Key'
+    )
   end
 end
 
@@ -99,6 +97,14 @@ namespace :secrets do
     keys:deploy:generate
     keys:secrets:generate
   ]
+
+  desc 'Provision all secrets.'
+  task provision: [:generate]
+
+  desc 'Delete all secrets.'
+  task :destroy do
+    rm_rf 'config/secrets'
+  end
 end
 
 RakeCircleCI.define_project_tasks(
@@ -144,6 +150,30 @@ RakeGithub.define_repository_tasks(
   t.branch_name = args.branch_name
   t.commit_message = args.commit_message
 end
+
+RakeGitCrypt.define_standard_tasks(
+  namespace: :git_crypt,
+
+  provision_secrets_task_name: :'secrets:provision',
+  destroy_secrets_task_name: :'secrets:destroy',
+
+  install_commit_task_name: :'git:commit',
+  uninstall_commit_task_name: :'git:commit',
+
+  gpg_user_key_paths: %w[
+    config/gpg
+    config/secrets/ci/gpg.public
+  ]
+)
+
+namespace :git do
+  RakeGit.define_commit_task(
+    argument_names: [:message]
+  ) do |t, args|
+    t.message = args.message
+  end
+end
+
 
 namespace :pipeline do
   desc 'Prepare CircleCI Pipeline'
