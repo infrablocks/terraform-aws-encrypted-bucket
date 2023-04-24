@@ -95,6 +95,8 @@ resource "aws_s3_bucket_ownership_controls" "encrypted_bucket_ownership" {
 resource "aws_s3_bucket_acl" "encrypted_bucket" {
   bucket = aws_s3_bucket.encrypted_bucket.id
   acl    = local.acl
+
+  depends_on = [aws_s3_bucket_ownership_controls.encrypted_bucket_ownership]
 }
 
 resource "aws_s3_bucket_logging" "encrypted_bucket" {
