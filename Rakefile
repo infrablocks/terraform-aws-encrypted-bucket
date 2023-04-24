@@ -90,12 +90,12 @@ namespace :secrets do
     end
   end
 
-  desc 'Regenerate all secrets'
-  task regenerate: %w[
+  desc 'Generate all secrets'
+  task generate: %w[
     directory:ensure
     encryption:passphrase:generate
     keys:deploy:generate
-    keys:secrets:generate
+    keys:gpg:generate
   ]
 
   desc 'Provision all secrets.'
@@ -221,8 +221,8 @@ namespace :deployment do
     ) do |t, args|
       deployment_configuration =
         configuration
-        .for_scope(role: :prerequisites)
-        .for_overrides(args.to_h)
+          .for_scope(role: :prerequisites)
+          .for_overrides(args.to_h)
 
       t.source_directory = 'spec/unit/infra/prerequisites'
       t.work_directory = 'build/infra'
@@ -239,8 +239,8 @@ namespace :deployment do
     ) do |t, args|
       deployment_configuration =
         configuration
-        .for_scope(role: :root)
-        .for_overrides(args.to_h)
+          .for_scope(role: :root)
+          .for_overrides(args.to_h)
 
       t.source_directory = 'spec/unit/infra/root'
       t.work_directory = 'build/infra'
