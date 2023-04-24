@@ -174,7 +174,6 @@ namespace :git do
   end
 end
 
-
 namespace :pipeline do
   desc 'Prepare CircleCI Pipeline'
   task prepare: %i[
@@ -221,8 +220,8 @@ namespace :deployment do
     ) do |t, args|
       deployment_configuration =
         configuration
-          .for_scope(role: :prerequisites)
-          .for_overrides(args.to_h)
+        .for_scope(role: :prerequisites)
+        .for_overrides(args.to_h)
 
       t.source_directory = 'spec/unit/infra/prerequisites'
       t.work_directory = 'build/infra'
@@ -239,8 +238,8 @@ namespace :deployment do
     ) do |t, args|
       deployment_configuration =
         configuration
-          .for_scope(role: :root)
-          .for_overrides(args.to_h)
+        .for_scope(role: :root)
+        .for_overrides(args.to_h)
 
       t.source_directory = 'spec/unit/infra/root'
       t.work_directory = 'build/infra'
