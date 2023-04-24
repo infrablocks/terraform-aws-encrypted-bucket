@@ -84,6 +84,14 @@ resource "aws_s3_bucket" "encrypted_bucket" {
   }, local.tags)
 }
 
+resource "aws_s3_bucket_ownership_controls" "encrypted_bucket_ownership" {
+  bucket = aws_s3_bucket.encrypted_bucket.id
+
+  rule {
+    object_ownership = "ObjectWriter"
+  }
+}
+
 resource "aws_s3_bucket_acl" "encrypted_bucket" {
   bucket = aws_s3_bucket.encrypted_bucket.id
   acl    = local.acl
