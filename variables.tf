@@ -117,3 +117,14 @@ variable "object_lock_configuration" {
   default = null
 }
 
+variable "cors_rules" {
+  description = "If provided, will create a cors rule configuration with the given rules."
+  type        = list(object({
+    allowed_methods = list(string)
+    allowed_origins = list(string)
+    allowed_headers = optional(list(string))
+    expose_headers  = optional(list(string))
+    max_age_seconds = optional(number)
+  }))
+  default = null
+}

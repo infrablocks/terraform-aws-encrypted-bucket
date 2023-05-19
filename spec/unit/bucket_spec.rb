@@ -169,6 +169,13 @@ describe 'encrypted bucket' do
       expect(@plan)
         .to(include_output_creation(name: 'bucket_name'))
     end
+
+    it 'does not create cors configuration' do
+      expect(@plan)
+        .not_to(include_resource_creation(
+                  type: 'aws_s3_bucket_cors_configuration'
+                ))
+    end
   end
 
   describe 'when bucket ACL provided' do
@@ -1061,6 +1068,31 @@ describe 'encrypted bucket' do
                   1
                 ))
       end
+    end
+  end
+
+  context 'when cors_rules are provided' do
+    before(:context) do
+      @plan = plan(role: :root) do |vars|
+        vars.cors_rules = [{
+          allowed_methods: ['GET'],
+          allowed_origins: ['https://example.com'],
+          max_age_seconds: 60
+        }]
+      end
+    end
+
+    it 'creates cors configuration' do
+      expect(@plan)
+        .to(include_resource_creation(
+          type: 'aws_s3_bucket_cors_configuration'
+        )
+        .with_attribute_value(:cors_rule, [{
+                                id: '',
+                                allowed_methods: ['GET'],
+                                allowed_origins: ['https://example.com'],
+                                max_age_seconds: 60
+                              }]))
     end
   end
 

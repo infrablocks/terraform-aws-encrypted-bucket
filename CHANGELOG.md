@@ -1,3 +1,9 @@
+## 3.2.0 (December 19th, 2022)
+
+### Added 
+
+* CORS configuration has been added, configured via the `cors_rules` variable. 
+
 ## 3.1.0 (December 19th, 2022)
 
 ### Added 

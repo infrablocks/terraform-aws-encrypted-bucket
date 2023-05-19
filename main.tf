@@ -189,3 +189,21 @@ resource "aws_s3_bucket_object_lock_configuration" "encrypted_bucket" {
     }
   }
 }
+
+resource "aws_s3_bucket_cors_configuration" "encrypted_bucket" {
+  bucket = aws_s3_bucket.encrypted_bucket.id
+
+  count = var.cors_rules != null ? 1 : 0
+
+  dynamic cors_rule {
+    for_each = var.cors_rules
+
+    content {
+      allowed_headers = cors_rule.value.allowed_headers
+      allowed_methods = cors_rule.value.allowed_methods
+      allowed_origins = cors_rule.value.allowed_origins
+      expose_headers  = cors_rule.value.expose_headers
+      max_age_seconds = cors_rule.value.max_age_seconds
+    }
+  }
+}

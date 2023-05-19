@@ -27,4 +27,5 @@ module "encrypted_bucket" {
   enable_object_lock                 = var.enable_object_lock
   allow_destroy_when_objects_present = var.allow_destroy_when_objects_present
   object_lock_configuration          = var.object_lock_configuration
+  cors_rules                         = var.cors_rules
 }
