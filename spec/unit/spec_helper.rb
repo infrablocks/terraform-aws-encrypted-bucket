@@ -12,6 +12,11 @@ require 'stringio'
 Dir[File.join(__dir__, 'support', '**', '*.rb')]
   .each { |f| require f }
 
+# lino 4's default childprocess executor requires real IO objects for
+# stdout/stderr; the open4 executor accepts the log-device writables
+# rspec-terraform provides.
+Lino.configuration.executor = Lino::Executors::Open4.new
+
 RSpec.configure do |config|
   config.filter_run_when_matching :focus
   config.example_status_persistence_file_path = '.rspec_status'
